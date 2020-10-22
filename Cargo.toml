@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "subkey",
+]
+
+[profile.release]
+panic = "unwind"
