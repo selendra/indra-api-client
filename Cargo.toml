@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "subkey",
+    "operation",
 ]
 
 [profile.release]
