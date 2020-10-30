@@ -9,8 +9,7 @@ Usage:
     operation --version
 Commands:
     transaction        transaction token between account.
-    free-operation       your total account token.
-    total-issuance     total token in indracore.
+    balance            check amount of token
 Options:
     -h --help          Show this screen, or help about a command.
     -v --version       Show version.
@@ -27,10 +26,19 @@ Options:
     -a --amount <amount>       Amount of token to send
 ";
 
+const USAGE_BALANCE: &'static str = "
+operation balance -- checkamount of token.
+Usage:
+    operation balance [-f <accountid>] [-t]
+Options:
+    -f --free-balance <accountid>   show free balance of account.
+    -t --total-issuance             total amount of token in block chain.
+";
+
 #[derive(Debug, Eq, PartialEq)]
 pub enum Cmd {
     Transaction(Transaction),
-    // Freeoperation,
+    Balance(String),
     // TotalIssuance,
     Version,
     Help(String),
@@ -40,6 +48,7 @@ pub fn print_usage(cmd: String) {
     match &cmd[..] {
         "operation" => println!("{}", &USAGE[1..]),
         "transaction" => println!("{}", &USAGE_TRANSACTION[1..]),
+        "balance" => println!("{}", &USAGE_BALANCE[1..]),
         _ => println!("'{}' is not a Tako command. See 'operation --help'.", cmd),
     }
 }
@@ -158,9 +167,40 @@ pub fn parse(argv: Vec<String>) -> Result<Cmd, String> {
 
     match arg.as_ref() {
         Arg::Plain("transaction") => parse_transaction(args),
+        Arg::Plain("balance") => parse_balance(args),
         Arg::Long("version") => drain(args).and(Ok(Cmd::Version)),
         Arg::Short("h") | Arg::Long("help") => parse_help(args),
         _ => return unexpected(arg),
+    }
+}
+
+fn parse_balance(mut args: ArgIter) -> Result<Cmd, String> {
+    let mut total_issuance: bool = false;
+    let mut accountid: Option<String> = None;
+
+    while let Some(arg) = args.next() {
+        match arg.as_ref() {
+            Arg::Short("t") | Arg::Long("total-issuance") => total_issuance = true,
+            Arg::Short("f") | Arg::Long("free-balance") => {
+                let msg = "Expected account id after --free-balance.";
+                accountid = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "balance"),
+            _ => return unexpected(arg),
+        }
+    }
+    if total_issuance {
+        Ok(Cmd::Balance("total-issuance".to_string()))
+    } else {
+        Ok(Cmd::Balance(accountid.unwrap()))
+    }
+}
+
+fn parse_help(mut args: ArgIter) -> Result<Cmd, String> {
+    match args.next() {
+        Some(Arg::Plain(cmd)) => drain(args).and(Ok(Cmd::Help(cmd))),
+        Some(arg) => unexpected(arg),
+        None => Ok(Cmd::Help("operation".to_string())),
     }
 }
 
@@ -195,14 +235,6 @@ fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
     };
 
     Ok(Cmd::Transaction(transaction))
-}
-
-fn parse_help(mut args: ArgIter) -> Result<Cmd, String> {
-    match args.next() {
-        Some(Arg::Plain(cmd)) => drain(args).and(Ok(Cmd::Help(cmd))),
-        Some(arg) => unexpected(arg),
-        None => Ok(Cmd::Help("operation".to_string())),
-    }
 }
 
 fn drain_help(args: ArgIter, cmd: &'static str) -> Result<Cmd, String> {
