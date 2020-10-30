@@ -1,19 +1,19 @@
+extern crate dotenv;
 extern crate env_logger;
 use std::env;
 
 pub mod command;
 use command::{api, operation, operation::Cmd};
+use utils::primitives::Config;
 
 use substrate_subxt::{ClientBuilder, DefaultNodeRuntime};
 
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
-    dotenv::dotenv().expect("Failed to read .env file");
-    let url = std::env::var("RPC");
 
     let client = ClientBuilder::<DefaultNodeRuntime>::new()
-        .set_url(url.unwrap())
+        .set_url(Config::url())
         .build()
         .await;
 
@@ -29,6 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     match operation::parse(args) {
         Ok(Cmd::Help(cmd)) => operation::print_usage(cmd),
         Ok(Cmd::Version) => operation::print_version(),
+        Ok(Cmd::Balance(cmd)) => api::check_balance(client, cmd).await,
         Ok(Cmd::Transaction(t)) => api::run_transaction(client, t).await,
         Err(msg) => {
             println!("{}", msg);
