@@ -10,7 +10,7 @@ pub struct Config {}
 
 impl Config {
     pub fn url() -> String {
-        dotenv::dotenv().expect("Failed to read .env file");
+        dotenv::dotenv().expect("!!! Failed to read .env file");
         let url = env::var("RPC");
         url.unwrap()
     }

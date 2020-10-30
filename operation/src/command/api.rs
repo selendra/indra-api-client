@@ -13,7 +13,7 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
     let info = match info {
         Ok(info) => info,
         Err(_) => {
-            colour::e_red_ln!("something went wrong");
+            colour::e_red_ln!("!!! something went wrong");
             std::process::exit(1)
         }
     };
@@ -25,7 +25,7 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
         let sub = match sub {
             Ok(sub) => sub,
             Err(_) => {
-                colour::e_red_ln!("something went wrong");
+                colour::e_red_ln!("!!! something went wrong");
                 std::process::exit(1)
             }
         };
@@ -39,7 +39,7 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
         let hash = match hash {
             Ok(h) => h,
             Err(_) => {
-                colour::e_red_ln!("Transaction failed");
+                colour::e_red_ln!("!!! Transaction failed");
                 std::process::exit(1)
             }
         };
@@ -48,11 +48,11 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
         let event = TransferEvent::<DefaultNodeRuntime>::decode(&mut &raw.data[..]);
         if let Ok(event) = event {
             colour::dark_cyan_ln!(
-                "Balance transfer extrinsic submitted: {}\n\t** from: {:?}\n\t** to: {:?}\n\t** amount {} {}",
+                ">> Balance transfer extrinsic submitted: {}\n\t** from: {:?}\n\t** to: {:?}\n\t** amount {} {}",
                 hash, event.from, event.to, amount.token, Config::token()
             );
         } else {
-            println!("Failed to subscribe to Balances::Transfer Event");
+            colour::e_red_ln!("!!! Failed to subscribe to Balances::Transfer Event");
         }
     }
 }
@@ -68,7 +68,7 @@ pub async fn check_balance(client: Client, cmd: String) {
         let info = match info {
             Ok(info) => info,
             Err(_) => {
-                colour::e_red_ln!("something went wrong");
+                colour::e_red_ln!("!!! something went wrong");
                 std::process::exit(1)
             }
         };
