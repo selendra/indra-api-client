@@ -1,4 +1,3 @@
-extern crate dotenv;
 extern crate env_logger;
 use std::env;
 
