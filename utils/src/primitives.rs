@@ -5,6 +5,21 @@ pub type Client = substrate_subxt::Client<DefaultNodeRuntime>;
 pub type AccountId = pallet_indices::address::Address<sp_core::crypto::AccountId32, u32>;
 pub type Signer = PairSigner<DefaultNodeRuntime, sp_core::sr25519::Pair>;
 
+#[derive(Debug, Eq, PartialEq)]
+pub struct Transaction {
+    pub sender: Option<String>,
+    pub receiver: Option<String>,
+    pub amount: Option<String>,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct ContractUpload {
+    pub uploader: Option<String>,
+    pub file: Option<String>,
+}
+pub struct Token {
+    pub token: f64,
+}
 #[derive(Debug)]
 pub struct Config {}
 
@@ -24,16 +39,6 @@ impl Config {
         let token = env::var("TOKEN");
         token.unwrap()
     }
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub struct Transaction {
-    pub sender: Option<String>,
-    pub receiver: Option<String>,
-    pub amount: Option<String>,
-}
-pub struct Token {
-    pub token: f64,
 }
 
 impl Token {

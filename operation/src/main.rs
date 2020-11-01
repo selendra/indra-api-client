@@ -30,6 +30,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(Cmd::Help(cmd)) => operation::print_usage(cmd),
         Ok(Cmd::Version) => operation::print_version(),
         Ok(Cmd::Balance(cmd)) => api::check_balance(client, cmd).await,
+        Ok(Cmd::ContractUpload(cp)) => api::contract(client, cp).await,
         Ok(Cmd::Transaction(t)) => api::run_transaction(client, t).await,
         Err(msg) => {
             println!("{}", msg);
