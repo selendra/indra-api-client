@@ -189,7 +189,7 @@ fn parse_balance(mut args: ArgIter) -> Result<Cmd, String> {
 
     while let Some(arg) = args.next() {
         match arg.as_ref() {
-            Arg::Short("-p") | Arg::Long("total-issuance") => total_issuance = true,
+            Arg::Short("t") | Arg::Long("total-issuance") => total_issuance = true,
             Arg::Short("f") | Arg::Long("free-balance") => {
                 let msg = "Expected account id after --free-balance.";
                 accountid = Some(expect_plain(&mut args, msg)?);

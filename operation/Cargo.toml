@@ -18,6 +18,4 @@ env_logger = "0.7.1"
 utils = {path = "../utils/"}
 substrate-subxt = { path = "../subxt" }
 async-std = { version = "1.6.4", features = ["attributes"] }
-dotenv = "0.15.0"
 colour = "0.5.0"
-version = "3.0.0"
