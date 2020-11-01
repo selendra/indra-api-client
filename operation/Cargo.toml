@@ -14,9 +14,7 @@ name = "operation"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
-clap = "2.33.3"
 env_logger = "0.7.1"
-wabt = "0.10.0"
 utils = {path = "../utils/"}
 substrate-subxt = { path = "../subxt" }
 async-std = { version = "1.6.4", features = ["attributes"] }

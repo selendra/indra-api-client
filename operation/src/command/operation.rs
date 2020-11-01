@@ -1,4 +1,4 @@
-use utils::primitives::Transaction;
+use utils::primitives::{ContractUpload, Transaction};
 
 const USAGE: &'static str = "
 operation -- operation infomation and transaction.
@@ -27,7 +27,7 @@ Options:
 ";
 
 const USAGE_BALANCE: &'static str = "
-operation balance -- checkamount of token.
+operation balance -- check amount of token.
 Usage:
     operation balance [-f <accountid>] [-t]
 Options:
@@ -35,11 +35,20 @@ Options:
     -t --total-issuance             total amount of token in block chain.
 ";
 
+const USAGE_CONTRACT_UPLOAD: &'static str = "
+operation contract-upload -- upload smart contract.
+Usage:
+    operation contract-upload [-u <mnemonic>] [-f <file>]
+Options:
+    -u --uloader <mnemonic>   Your account mnemonic.
+    -f --file <file>          Your contract wasm file. 
+";
+
 #[derive(Debug, Eq, PartialEq)]
 pub enum Cmd {
     Transaction(Transaction),
     Balance(String),
-    // TotalIssuance,
+    ContractUpload(ContractUpload),
     Version,
     Help(String),
 }
@@ -49,17 +58,16 @@ pub fn print_usage(cmd: String) {
         "operation" => println!("{}", &USAGE[1..]),
         "transaction" => println!("{}", &USAGE_TRANSACTION[1..]),
         "balance" => println!("{}", &USAGE_BALANCE[1..]),
-        _ => println!("'{}' is not a Tako command. See 'operation --help'.", cmd),
+        "contract-upload" => println!("{}", &USAGE_CONTRACT_UPLOAD[1..]),
+        _ => println!(
+            "'{}' is not a Operation command. See 'operation --help'.",
+            cmd
+        ),
     }
 }
 
 pub fn print_version() {
-    println!(
-        "
-    - version 0.1.0
-    - indracore operation with command line
-    "
-    );
+    println!("operation version 0.1.0");
 }
 
 enum Arg<T> {
@@ -168,6 +176,7 @@ pub fn parse(argv: Vec<String>) -> Result<Cmd, String> {
     match arg.as_ref() {
         Arg::Plain("transaction") => parse_transaction(args),
         Arg::Plain("balance") => parse_balance(args),
+        Arg::Plain("contract-upload") => parse_contract_upload(args),
         Arg::Long("version") => drain(args).and(Ok(Cmd::Version)),
         Arg::Short("h") | Arg::Long("help") => parse_help(args),
         _ => return unexpected(arg),
@@ -180,7 +189,7 @@ fn parse_balance(mut args: ArgIter) -> Result<Cmd, String> {
 
     while let Some(arg) = args.next() {
         match arg.as_ref() {
-            Arg::Short("t") | Arg::Long("total-issuance") => total_issuance = true,
+            Arg::Short("-p") | Arg::Long("total-issuance") => total_issuance = true,
             Arg::Short("f") | Arg::Long("free-balance") => {
                 let msg = "Expected account id after --free-balance.";
                 accountid = Some(expect_plain(&mut args, msg)?);
@@ -196,12 +205,29 @@ fn parse_balance(mut args: ArgIter) -> Result<Cmd, String> {
     }
 }
 
-fn parse_help(mut args: ArgIter) -> Result<Cmd, String> {
-    match args.next() {
-        Some(Arg::Plain(cmd)) => drain(args).and(Ok(Cmd::Help(cmd))),
-        Some(arg) => unexpected(arg),
-        None => Ok(Cmd::Help("operation".to_string())),
+fn parse_contract_upload(mut args: ArgIter) -> Result<Cmd, String> {
+    let mut uploader: Option<String> = None;
+    let mut file: Option<String> = None;
+
+    while let Some(arg) = args.next() {
+        match arg.as_ref() {
+            Arg::Short("u") | Arg::Long("uploader") => {
+                let msg = "Expected mnemonic after --uploader.";
+                uploader = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("f") | Arg::Long("file") => {
+                let msg = "Expected file after --file.";
+                file = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "contract-upload"),
+            _ => return unexpected(arg),
+        }
     }
+    let upload = ContractUpload {
+        uploader: uploader,
+        file: file,
+    };
+    Ok(Cmd::ContractUpload(upload))
 }
 
 fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
@@ -235,6 +261,14 @@ fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
     };
 
     Ok(Cmd::Transaction(transaction))
+}
+
+fn parse_help(mut args: ArgIter) -> Result<Cmd, String> {
+    match args.next() {
+        Some(Arg::Plain(cmd)) => drain(args).and(Ok(Cmd::Help(cmd))),
+        Some(arg) => unexpected(arg),
+        None => Ok(Cmd::Help("operation".to_string())),
+    }
 }
 
 fn drain_help(args: ArgIter, cmd: &'static str) -> Result<Cmd, String> {

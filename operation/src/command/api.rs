@@ -1,8 +1,13 @@
+use colour::{dark_green_ln, e_red_ln, e_yellow_ln};
 use substrate_subxt::{
-    balances::*, sp_core::Decode, system::*, DefaultNodeRuntime, EventSubscription, EventsDecoder,
+    balances::*, contracts::*, sp_core::Decode, system::*, DefaultNodeRuntime, Error,
+    EventSubscription, EventsDecoder,
 };
-use utils::keyring;
-use utils::primitives::{Client, Config, Token, Transaction};
+use utils::{
+    keyring,
+    primitives::{Client, Config, ContractUpload, Signer, Token, Transaction},
+    read,
+};
 
 pub async fn run_transaction(client: Client, transaction: Transaction) {
     let amount = Token::get(transaction.amount.unwrap());
@@ -13,19 +18,37 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
     let info = match info {
         Ok(info) => info,
         Err(_) => {
-            colour::e_red_ln!("!!! something went wrong");
+            e_red_ln!("!!! something went wrong");
             std::process::exit(1)
         }
     };
 
     if info.data.free <= amount.pay() {
-        colour::e_yellow_ln!("!!! your balance : {:?} too low to send", info.data.free)
+        if info.data.free > 0 {
+            let amount = Token::amount(info.data.free);
+            if amount == 0 {
+                let low = Token::low_amount(info.data.free);
+                e_yellow_ln!(
+                    "!!! your balance : {:?} {} too low to send",
+                    low,
+                    Config::token()
+                )
+            } else {
+                e_yellow_ln!(
+                    "!!! your balance : {:?} {} too low to send",
+                    amount,
+                    Config::token()
+                )
+            }
+        } else {
+            e_yellow_ln!("!!! your balance is : 0 {}", Config::token())
+        }
     } else {
         let sub = client.subscribe_events().await;
         let sub = match sub {
             Ok(sub) => sub,
             Err(_) => {
-                colour::e_red_ln!("!!! something went wrong");
+                e_red_ln!("!!! something went wrong");
                 std::process::exit(1)
             }
         };
@@ -39,7 +62,7 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
         let hash = match hash {
             Ok(h) => h,
             Err(_) => {
-                colour::e_red_ln!("!!! Transaction failed");
+                e_red_ln!("!!! Transaction failed");
                 std::process::exit(1)
             }
         };
@@ -52,7 +75,7 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
                 hash, event.from, event.to, amount.token, Config::token()
             );
         } else {
-            colour::e_red_ln!("!!! Failed to subscribe to Balances::Transfer Event");
+            e_red_ln!("!!! Failed to subscribe to Balances::Transfer Event");
         }
     }
 }
@@ -61,14 +84,14 @@ pub async fn check_balance(client: Client, cmd: String) {
     if cmd.eq("total-issuance") {
         let total = client.total_issuance(None).await.unwrap();
         let amount = Token::amount(total);
-        colour::dark_green_ln!("***total issuance is: {:?} {}", amount, Config::token())
+        dark_green_ln!("***total issuance is: {:?} {}", amount, Config::token())
     } else {
         let account = keyring::AccountId::new(cmd);
         let info = client.account(&account.accounid32(), None).await;
         let info = match info {
             Ok(info) => info,
             Err(_) => {
-                colour::e_red_ln!("!!! something went wrong");
+                e_red_ln!("!!! something went wrong");
                 std::process::exit(1)
             }
         };
@@ -76,10 +99,40 @@ pub async fn check_balance(client: Client, cmd: String) {
             let amount = Token::amount(info.data.free);
             if amount == 0 {
                 let low = Token::low_amount(info.data.free);
-                colour::dark_green_ln!("*** your free balance is {:?} {}", low, Config::token())
+                dark_green_ln!("*** your free balance is {:?} {}", low, Config::token())
             } else {
-                colour::dark_green_ln!("*** your free balance is {:?} {}", amount, Config::token())
+                dark_green_ln!("*** your free balance is {:?} {}", amount, Config::token())
             }
+        } else {
+            dark_green_ln!("*** your free balance is 0 {}", Config::token())
         }
     }
+}
+
+pub async fn contract(client: Client, contract: ContractUpload) {
+    let uploader = keyring::Signer::new(contract.uploader.unwrap());
+
+    let code_stored = put_code(client, uploader.pair(), contract.file.unwrap()).await;
+    let code_stored = match code_stored {
+        Ok(cs) => cs,
+        Err(_) => {
+            e_red_ln!("!!! Contract Upload failed");
+            std::process::exit(1)
+        }
+    };
+    dark_green_ln!("*** Code hash: {:?}", code_stored.code_hash)
+}
+
+pub async fn put_code(
+    client: Client,
+    uploader: Signer,
+    file: String,
+) -> Result<CodeStoredEvent<DefaultNodeRuntime>, Error> {
+    let w = read::read_wasm(file);
+    let result = client.put_code_and_watch(&uploader, &w).await?;
+
+    let code_stored = result
+        .code_stored()?
+        .ok_or_else(|| Error::Other("Failed to find a CodeStored event".into()))?;
+    Ok(code_stored)
 }
