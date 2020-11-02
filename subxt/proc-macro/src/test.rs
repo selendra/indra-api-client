@@ -17,15 +17,9 @@
 use crate::utils;
 use proc_macro2::TokenStream;
 use proc_macro_error::abort;
-use quote::{
-    format_ident,
-    quote,
-};
+use quote::{format_ident, quote};
 use syn::{
-    parse::{
-        Parse,
-        ParseStream,
-    },
+    parse::{Parse, ParseStream},
     punctuated::Punctuated,
 };
 
@@ -174,8 +168,8 @@ impl From<ItemTest> for Test {
             }
         }
         let subxt = utils::use_crate("substrate-subxt");
-        let runtime = runtime
-            .unwrap_or_else(|| syn::parse2(quote!(#subxt::DefaultNodeRuntime)).unwrap());
+        let runtime =
+            runtime.unwrap_or_else(|| syn::parse2(quote!(#subxt::IndracoreNodeRuntime)).unwrap());
         Self {
             name: name.unwrap_or_else(|| abort!(span, "No name specified")),
             account: account.unwrap_or_else(|| format_ident!("Alice")),
@@ -191,8 +185,8 @@ impl Test {
     fn into_tokens(self) -> TokenStream {
         let subxt = utils::use_crate("substrate-subxt");
         let sp_keyring = utils::use_crate("sp-keyring");
-        let env_logger = utils::opt_crate("env_logger")
-            .map(|env_logger| quote!(#env_logger::try_init().ok();));
+        let env_logger =
+            utils::opt_crate("env_logger").map(|env_logger| quote!(#env_logger::try_init().ok();));
         let Test {
             name,
             runtime,
@@ -388,8 +382,7 @@ fn struct_name(expr: &syn::Expr) -> syn::Path {
 }
 
 pub fn test(input: TokenStream) -> TokenStream {
-    let item_test: ItemTest =
-        syn::parse2(input).map_err(|err| abort!("{}", err)).unwrap();
+    let item_test: ItemTest = syn::parse2(input).map_err(|err| abort!("{}", err)).unwrap();
     Test::from(item_test).into_tokens()
 }
 

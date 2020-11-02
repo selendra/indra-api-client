@@ -5,13 +5,13 @@ pub mod command;
 use command::{api, operation, operation::Cmd};
 use utils::primitives::Config;
 
-use substrate_subxt::{ClientBuilder, DefaultNodeRuntime};
+use substrate_subxt::{ClientBuilder, IndracoreNodeRuntime};
 
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
-    let client = ClientBuilder::<DefaultNodeRuntime>::new()
+    let client = ClientBuilder::<IndracoreNodeRuntime>::new()
         .set_url(Config::url())
         .build()
         .await;

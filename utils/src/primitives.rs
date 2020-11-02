@@ -1,9 +1,9 @@
 use std::env;
-use substrate_subxt::{DefaultNodeRuntime, PairSigner};
+use substrate_subxt::{IndracoreNodeRuntime, PairSigner};
 
-pub type Client = substrate_subxt::Client<DefaultNodeRuntime>;
+pub type Client = substrate_subxt::Client<IndracoreNodeRuntime>;
 pub type AccountId = pallet_indices::address::Address<sp_core::crypto::AccountId32, u32>;
-pub type Signer = PairSigner<DefaultNodeRuntime, sp_core::sr25519::Pair>;
+pub type Signer = PairSigner<IndracoreNodeRuntime, sp_core::sr25519::Pair>;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Transaction {

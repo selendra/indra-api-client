@@ -1,8 +1,8 @@
 use sp_core::{sr25519::Pair, Pair as TraitPair};
-use substrate_subxt::{DefaultNodeRuntime, PairSigner};
+use substrate_subxt::{IndracoreNodeRuntime, PairSigner};
 
 use colour::e_red_ln;
-use std::{fmt, str::FromStr};
+use std::str::FromStr;
 
 use crate::primitives;
 
@@ -42,12 +42,6 @@ impl AccountId {
     }
 }
 
-impl fmt::Display for AccountId {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.accounid())
-    }
-}
-
 impl Signer {
     pub fn new(mnemonic: String) -> Signer {
         Signer { mnemonic: mnemonic }
@@ -55,7 +49,7 @@ impl Signer {
     pub fn pair(&self) -> primitives::Signer {
         let pair = Pair::from_string(&self.mnemonic, None);
         match pair {
-            Ok(p) => PairSigner::<DefaultNodeRuntime, Pair>::new(p),
+            Ok(p) => PairSigner::<IndracoreNodeRuntime, Pair>::new(p),
             Err(_) => {
                 e_red_ln!("!!! The mnemonic provided is invalid");
                 std::process::exit(1)
@@ -72,11 +66,5 @@ impl Signer {
                 std::process::exit(1)
             }
         }
-    }
-}
-
-impl fmt::Display for Signer {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.accountid())
     }
 }
