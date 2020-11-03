@@ -18,7 +18,7 @@ pub struct LoginHistory {
 #[derive(Insertable)]
 #[table_name = "login_history"]
 pub struct LoginHistoryInsertableDTO {
-    pub user_id: i32,
+    pub user_id: uuid::Uuid,
     pub login_timestamp: DateTime<Utc>,
 }
 
@@ -34,7 +34,10 @@ impl LoginHistory {
         }
     }
 
-    pub fn save_login_history(insert_record: LoginHistoryInsertableDTO, conn: &Connection) -> QueryResult<usize> {
+    pub fn save_login_history(
+        insert_record: LoginHistoryInsertableDTO,
+        conn: &Connection,
+    ) -> QueryResult<usize> {
         diesel::insert_into(login_history)
             .values(&insert_record)
             .execute(conn)

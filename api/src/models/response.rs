@@ -12,3 +12,14 @@ impl<T> ResponseBody<T> {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ResponseBalance<T> {
+    pub data: T,
+}
+
+impl<T> ResponseBalance<T> {
+    pub fn new(data: T) -> ResponseBalance<T> {
+        ResponseBalance { data }
+    }
+}

@@ -24,3 +24,5 @@ pub const EMPTY: &str = "";
 
 // ignore routes
 pub const IGNORE_ROUTES: [&str; 3] = ["/api/ping", "/api/auth/signup", "/api/auth/login"];
+
+pub const CONNECT_REFUSE: &str = "Connection refuse";

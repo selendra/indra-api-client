@@ -10,16 +10,25 @@ use uuid::Uuid;
 
 #[derive(Identifiable, Queryable, Serialize, Deserialize)]
 pub struct User {
-    pub id: i32,
+    pub id: Uuid,
     pub username: String,
     pub email: String,
     pub password: String,
     pub login_session: String,
 }
 
-#[derive(Insertable, Serialize, Deserialize)]
+#[derive(Insertable, Serialize, Deserialize, Debug)]
 #[table_name = "users"]
 pub struct UserDTO {
+    pub username: String,
+    pub email: String,
+    pub password: String,
+}
+
+#[derive(Insertable, Serialize, Deserialize, Debug)]
+#[table_name = "users"]
+pub struct UserCreate {
+    pub id: Uuid,
     pub username: String,
     pub email: String,
     pub password: String,
@@ -42,9 +51,12 @@ impl User {
     pub fn signup(user: UserDTO, conn: &Connection) -> Result<String, String> {
         if Self::find_user_by_username(&user.username, conn).is_err() {
             let hashed_pwd = hash(&user.password, DEFAULT_COST).unwrap();
-            let user = UserDTO {
+            let user_id = uuid::Uuid::new_v4();
+            let user = UserCreate {
+                id: user_id,
                 password: hashed_pwd,
-                ..user
+                email: user.email,
+                username: user.username,
             };
             diesel::insert_into(users).values(&user).execute(conn);
             Ok(constants::MESSAGE_SIGNUP_SUCCESS.to_string())
@@ -84,7 +96,7 @@ impl User {
         None
     }
 
-    pub fn logout(user_id: i32, conn: &Connection) {
+    pub fn logout(user_id: Uuid, conn: &Connection) {
         if let Ok(user) = users.find(user_id).get_result::<User>(conn) {
             Self::update_login_session_to_db(&user.username, "", conn);
         }
@@ -103,7 +115,7 @@ impl User {
     }
 
     pub fn generate_login_session() -> String {
-        Uuid::new_v4().to_simple().to_string()
+        Uuid::new_v4().simple().to_string()
     }
 
     pub fn update_login_session_to_db(

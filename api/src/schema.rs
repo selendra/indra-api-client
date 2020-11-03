@@ -1,14 +1,14 @@
 table! {
     login_history (id) {
         id -> Int4,
-        user_id -> Int8,
+        user_id -> Uuid,
         login_timestamp -> Timestamptz,
     }
 }
 
 table! {
     users (id) {
-        id -> Int4,
+        id -> Uuid,
         username -> Varchar,
         email -> Varchar,
         password -> Varchar,
