@@ -133,6 +133,10 @@ pub async fn contract(client: Client, contract: ContractUpload) {
         "*** contract instantiate hash: {}",
         instant.contract.clone()
     );
+    let id = instant.contract.clone();
+    let contract = pallet_indices::address::Address::from(id);
+    let call = call_contract(client, &contract, &[], uploader.pair()).await;
+    println!("{:?}", call);
 }
 
 pub async fn put_code(
@@ -172,20 +176,20 @@ pub async fn deploy(
     Ok(instantiated)
 }
 
-// async fn call_contract(
-//     client: Client,
-//     contract: &<IndracoreNodeRuntime as System>::Address,
-//     input_data: &[u8],
-//     uploader: Signer,
-// ) -> Result<ExtrinsicSuccess<IndracoreNodeRuntime>, Error> {
-//     let result = client
-//         .call_and_watch(
-//             &uploader,
-//             contract,
-//             0,           // value
-//             500_000_000, // gas_limit
-//             input_data,
-//         )
-//         .await?;
-//     Ok(result)
-// }
+async fn call_contract(
+    client: Client,
+    contract: &<IndracoreNodeRuntime as System>::Address,
+    input_data: &[u8],
+    uploader: Signer,
+) -> Result<ExtrinsicSuccess<IndracoreNodeRuntime>, Error> {
+    let result = client
+        .call_and_watch(
+            &uploader,
+            contract,
+            0,           // value
+            500_000_000, // gas_limit
+            input_data,
+        )
+        .await?;
+    Ok(result)
+}
