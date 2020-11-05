@@ -24,25 +24,12 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
     };
 
     if info.data.free <= amount.pay() {
-        if info.data.free > 0 {
-            let amount = Token::amount(info.data.free);
-            if amount == 0 {
-                let low = Token::low_amount(info.data.free);
-                e_yellow_ln!(
-                    "!!! your balance : {} {} too low to send",
-                    low,
-                    Config::token()
-                )
-            } else {
-                e_yellow_ln!(
-                    "!!! your balance : {} {} too low to send",
-                    amount,
-                    Config::token()
-                )
-            }
-        } else {
-            e_yellow_ln!("!!! your balance is : 0 {}", Config::token())
-        }
+        let amount = Token::amount(info.data.free);
+        e_yellow_ln!(
+            "!!! your balance : {} {} too low to send",
+            amount,
+            Config::token()
+        )
     } else {
         let sub = client.subscribe_events().await;
         let sub = match sub {
@@ -83,7 +70,7 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
 pub async fn check_balance(client: Client, cmd: String) {
     if cmd.eq("total-issuance") {
         let total = client.total_issuance(None).await.unwrap();
-        let amount = Token::amount(total);
+        let amount = Token::lamount(total);
         dark_green_ln!("***total issuance is: {:?} {}", amount, Config::token())
     } else {
         let account = keyring::AccountId::new(cmd);
@@ -95,17 +82,9 @@ pub async fn check_balance(client: Client, cmd: String) {
                 std::process::exit(1)
             }
         };
-        if info.data.free > 0 {
-            let amount = Token::amount(info.data.free);
-            if amount == 0 {
-                let low = Token::low_amount(info.data.free);
-                dark_green_ln!("*** your free balance is {} {}", low, Config::token())
-            } else {
-                dark_green_ln!("*** your free balance is {} {}", amount, Config::token())
-            }
-        } else {
-            dark_green_ln!("*** your free balance is 0 {}", Config::token())
-        }
+
+        let amount = Token::amount(info.data.free);
+        dark_green_ln!("*** your free balance is {} {}", amount, Config::token())
     }
 }
 
