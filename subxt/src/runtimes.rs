@@ -19,13 +19,8 @@ use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use sp_runtime::{
     generic::Header,
     impl_opaque_keys,
-    traits::{
-        BlakeTwo256,
-        IdentifyAccount,
-        Verify,
-    },
-    MultiSignature,
-    OpaqueExtrinsic,
+    traits::{BlakeTwo256, IdentifyAccount, Verify},
+    MultiSignature, OpaqueExtrinsic,
 };
 use sp_std::prelude::*;
 
@@ -53,10 +48,7 @@ impl sp_runtime::BoundToRuntimeAppPublic for Grandpa {
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 
 mod validator_app {
-    use application_crypto::{
-        app_crypto,
-        sr25519,
-    };
+    use application_crypto::{app_crypto, sr25519};
     app_crypto!(sr25519, sp_core::crypto::KeyTypeId(*b"para"));
 }
 
@@ -108,15 +100,9 @@ impl_opaque_keys! {
 }
 
 use crate::{
-    extrinsic::{
-        DefaultExtra,
-        SignedExtra,
-    },
+    extrinsic::{DefaultExtra, SignedExtra},
     frame::{
-        balances::{
-            AccountData,
-            Balances,
-        },
+        balances::{AccountData, Balances},
         contracts::Contracts,
         session::Session,
         staking::Staking,
@@ -140,16 +126,16 @@ pub trait Runtime: System + Sized + Send + Sync + 'static {
 /// If the concrete types in the target substrate runtime differ from these, a custom Runtime
 /// definition MUST be used to ensure type compatibility.
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct DefaultNodeRuntime;
+pub struct IndracoreNodeRuntime;
 
-impl Staking for DefaultNodeRuntime {}
+impl Staking for IndracoreNodeRuntime {}
 
-impl Runtime for DefaultNodeRuntime {
+impl Runtime for IndracoreNodeRuntime {
     type Signature = MultiSignature;
     type Extra = DefaultExtra<Self>;
 }
 
-impl System for DefaultNodeRuntime {
+impl System for IndracoreNodeRuntime {
     type Index = u32;
     type BlockNumber = u32;
     type Hash = sp_core::H256;
@@ -161,18 +147,18 @@ impl System for DefaultNodeRuntime {
     type AccountData = AccountData<<Self as Balances>::Balance>;
 }
 
-impl Balances for DefaultNodeRuntime {
+impl Balances for IndracoreNodeRuntime {
     type Balance = u128;
 }
 
-impl Session for DefaultNodeRuntime {
+impl Session for IndracoreNodeRuntime {
     type ValidatorId = <Self as System>::AccountId;
     type Keys = BasicSessionKeys;
 }
 
-impl Contracts for DefaultNodeRuntime {}
+impl Contracts for IndracoreNodeRuntime {}
 
-impl Sudo for DefaultNodeRuntime {}
+impl Sudo for IndracoreNodeRuntime {}
 
 /// Concrete type definitions compatible with the node template.
 ///
