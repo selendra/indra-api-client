@@ -17,8 +17,19 @@ pub fn config_services(cfg: &mut web::ServiceConfig) {
                         web::resource("/logout").route(web::post().to(account_controller::logout)),
                     ),
             )
-            .service(web::scope("/indracore").service(
-                web::resource("/total").route(web::get().to(balance_controller::get_total)),
-            )),
+            .service(
+                web::scope("/indracore")
+                    .service(
+                        web::resource("/total").route(web::get().to(balance_controller::get_total)),
+                    )
+                    .service(
+                        web::resource("/free")
+                            .route(web::post().to(balance_controller::get_balance)),
+                    )
+                    .service(
+                        web::resource("/transaction")
+                            .route(web::post().to(balance_controller::make_transaction)),
+                    ),
+            ),
     );
 }
