@@ -7,8 +7,8 @@ pub struct AccountId {
 #[derive(Deserialize)]
 pub struct Transaction {
     pub sender: String,
-    #[serde(default)]
-    pub password: Option<String>,
+    #[serde(default = "empty_value")]
+    pub password: String,
     pub receiver: String,
     pub amount: f64,
 }
@@ -19,4 +19,8 @@ pub struct TransactionOutput {
     pub sender: sp_core::crypto::AccountId32,
     pub receiver: sp_core::crypto::AccountId32,
     pub amount: f64,
+}
+
+fn empty_value() -> String {
+    "".to_string()
 }
