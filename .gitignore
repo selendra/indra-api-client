@@ -5,8 +5,8 @@ Cargo.lock
 note.txt
 .env
 *.wasm
-/api_/db/target/
-/api_/encryption/target/
+/api_test/db/target/
+/api_test/encryption/target/
 
 .vscode/*
 !.vscode/settings.json
