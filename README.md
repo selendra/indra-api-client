@@ -6,12 +6,12 @@ Selendra-client is a client generic tools build to interact with indracore and o
 
 ### Feature
 
-[] Set WSS Node service provider.
-[] Generate Wallet.
-[] Offline Wallet Storage.
-[] List Wallet.
-[] Check Balance.
-[] Asset Transfer.
+- [ ] Set WSS Node service provider.
+- [ ] Generate Wallet.
+- [ ] Offline Wallet Storage.
+- [ ] List Wallet.
+- [ ] Check Balance.
+- [ ] Asset Transfer.
 
 ### Build 
 
