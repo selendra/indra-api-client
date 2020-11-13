@@ -58,7 +58,7 @@ pub async fn run_transaction(client: Client, transaction: Transaction) {
         let event = TransferEvent::<IndracoreNodeRuntime>::decode(&mut &raw.data[..]);
         if let Ok(event) = event {
             colour::dark_cyan_ln!(
-                ">> Balance transfer extrinsic submitted: {}\n\t** from: {:?}\n\t** to: {:?}\n\t** amount {} {}",
+                ">> Balance transfer extrinsic submitted: {}\n\t** from: {}\n\t** to: {:?}\n\t** amount {} {}",
                 hash, event.from, event.to, amount.token, Config::token()
             );
         } else {
