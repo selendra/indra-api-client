@@ -25,11 +25,7 @@ failure = "0.1.8"
 derive_more = "0.99.11"
 jsonwebtoken = "7.2.0"
 bcrypt = "0.8.2"
-substrate-subxt = { path = "../subxt" }
-sp-core = { git = "https://github.com/selendra/indracore", branch = "main" }
-sp-runtime = { git = "https://github.com/selendra/indracore", branch = "main" }
-pallet-indices = { git = "https://github.com/selendra/indracore", branch = "main" }
-hex-literal = "0.3.1"
+indracore-api = { path = "../indracore_api"}
 
 [dependencies.diesel]
 version = "1.4.4"

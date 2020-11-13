@@ -1,4 +1,16 @@
-use utils::primitives::{ContractUpload, Transaction};
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct Transaction {
+    pub sender: Option<String>,
+    pub receiver: Option<String>,
+    pub password: Option<String>,
+    pub amount: Option<String>,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub struct ContractUpload {
+    pub uploader: Option<String>,
+    pub file: Option<String>,
+}
 
 const USAGE: &'static str = "
 operation -- operation infomation and transaction.
@@ -19,9 +31,10 @@ See 'operation <command> --help' for information on a specific command.
 const USAGE_TRANSACTION: &'static str = "
 operation transaction -- transaction token between account.
 Usage:
-    operation transaction [-s <mnemonic>] [-r <accountid>] [-a <amount>]
+    operation transaction [-s <account>] [-p <password>] [-r <accountid>] [-a <amount>]
 Options:
-    -s --sender <mnemonic>     Your account mnemonic.
+    -s --sender <account>     Your account account.
+    -p --password <password>     Your account password.
     -r --receiver <accountid>  Account Id you want to send.
     -a --amount <amount>       Amount of token to send
 ";
@@ -38,9 +51,9 @@ Options:
 const USAGE_CONTRACT_UPLOAD: &'static str = "
 operation contract-upload -- upload smart contract.
 Usage:
-    operation contract-upload [-u <mnemonic>] [-f <file>]
+    operation contract-upload [-u <account>] [-f <file>]
 Options:
-    -u --uloader <mnemonic>   Your account mnemonic.
+    -u --uloader <account>   Your account account.
     -f --file <file>          Your contract wasm file. 
 ";
 
@@ -212,7 +225,7 @@ fn parse_contract_upload(mut args: ArgIter) -> Result<Cmd, String> {
     while let Some(arg) = args.next() {
         match arg.as_ref() {
             Arg::Short("u") | Arg::Long("uploader") => {
-                let msg = "Expected mnemonic after --uploader.";
+                let msg = "Expected account after --uploader.";
                 uploader = Some(expect_plain(&mut args, msg)?);
             }
             Arg::Short("f") | Arg::Long("file") => {
@@ -234,12 +247,17 @@ fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
     let mut sender: Option<String> = None;
     let mut receiver: Option<String> = None;
     let mut amount: Option<String> = None;
+    let mut password: Option<String> = None;
 
     while let Some(arg) = args.next() {
         match arg.as_ref() {
             Arg::Short("s") | Arg::Long("sender") => {
-                let msg = "Expected mnemonic after --sender.";
+                let msg = "Expected account after --sender.";
                 sender = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("p") | Arg::Long("password") => {
+                let msg = "Expected password after --password.";
+                password = Some(expect_plain(&mut args, msg)?);
             }
             Arg::Short("r") | Arg::Long("receiver") => {
                 let msg = "Expected account id after --receiver.";
@@ -255,9 +273,10 @@ fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
     }
 
     let transaction = Transaction {
-        sender: sender,
-        receiver: receiver,
-        amount: amount,
+        sender,
+        receiver,
+        amount,
+        password,
     };
 
     Ok(Cmd::Transaction(transaction))

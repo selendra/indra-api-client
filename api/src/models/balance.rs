@@ -1,10 +1,9 @@
-use crate::utils::primitives::Hash;
 #[derive(Deserialize)]
 pub struct AccountId {
     pub accountid: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct Transaction {
     pub sender: String,
     #[serde(default = "empty_value")]
@@ -15,9 +14,9 @@ pub struct Transaction {
 
 #[derive(Deserialize, Serialize)]
 pub struct TransactionOutput {
-    pub hash: Hash,
-    pub sender: sp_core::crypto::AccountId32,
-    pub receiver: sp_core::crypto::AccountId32,
+    pub hash: String,
+    pub sender: String,
+    pub receiver: String,
     pub amount: f64,
 }
 

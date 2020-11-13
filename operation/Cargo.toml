@@ -15,8 +15,6 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 env_logger = "0.7.1"
-utils = {path = "../utils/"}
-substrate-subxt = { path = "../subxt" }
+indracore-api = { path = "../indracore_api"}
 async-std = { version = "1.6.4", features = ["attributes"] }
 colour = "0.5.0"
-pallet-indices = { git = "https://github.com/selendra/indracore", branch = "main" }
