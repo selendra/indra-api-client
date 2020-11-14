@@ -2,7 +2,6 @@
 members = [
     "subkey",
     "operation",
-    'api',
 ]
 
 [profile.release]

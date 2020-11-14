@@ -46,6 +46,7 @@ extern crate substrate_subxt_proc_macro;
 #[cfg(feature = "client")]
 pub use substrate_subxt_client as client;
 
+pub use codec;
 pub use sp_core;
 pub use sp_runtime;
 

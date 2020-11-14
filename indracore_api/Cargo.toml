@@ -19,6 +19,15 @@ sp-rpc = {  git = "https://github.com/selendra/indracore", branch = "main", vers
 async-std = { version = "1.6.4", features = ["attributes"] }
 scale-info = { version = "0.4", default-features = false, features = ["derive"]}
 serde = { version = "1.0.115", default-features = false, features = ["derive"] }
+rustbreak = { version = "2.0.0-rc3", features=["bin_enc"] }
+
+schnorrkel = { version = "0.9.1", features = ["preaudit_deprecated", "u64_backend"], default-features = false }
+blake2-rfc = { version = "0.2.18" }
+toml = "0.5.6"
+rand = "0.7.2"
+dirs = "2.0"
+sodalite = "0.3.0"
+hex-literal = "0.2.1"
 
 serde_json = "1.0.57"
 escape8259 = "0.5.0"

@@ -15,6 +15,12 @@ pub fn url() -> String {
     url.unwrap_or("ws://127.0.0.1:9944".to_string())
 }
 
+pub fn genesis_hash() -> String {
+    dotenv::dotenv().expect("!!! Failed to read .env file");
+    let url = env::var("GENESIS_HASH");
+    url.unwrap_or("ws://127.0.0.1:9944".to_string())
+}
+
 pub fn decimal() -> u32 {
     dotenv::dotenv().expect("!!! Failed to read .env file");
     let decimal = std::env::var("DECIMAL").unwrap();
