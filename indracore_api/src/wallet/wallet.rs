@@ -210,20 +210,20 @@ impl WalletStore {
         let file = path
             .map(|v| {
                 let mut file = PathBuf::from(v);
-                file.push(wallet_name);
+                file.push(DEFAULT_WALLET_NAME);
                 file
             })
             .unwrap_or_else(|| {
                 let mut file = dirs::home_dir().unwrap();
                 file.push(".indrawallet");
-                file.push(wallet_name);
+                file.push(DEFAULT_WALLET_NAME);
                 file
             });
 
         if !file.exists() {
             fs::create_dir_all(file.parent().unwrap()).expect("Failed to create wallet file");
         }
-        let backend = Wallet::new(DEFAULT_WALLET_NAME.to_owned());
+        let backend = Wallet::new(wallet_name.to_owned());
         let db = FileDatabase::<Wallet, Bincode>::load_from_path_or(file, backend)
             .expect("Failed to initialize file database.");
         Self(db)

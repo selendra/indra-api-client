@@ -11,6 +11,7 @@ use indracore_api::{
 
 pub async fn run_transaction(transaction: Transaction) {
     // let password = transaction.password.unwrap();
+
     let rec = transaction.receiver.unwrap();
     let amount = Token::get(transaction.amount.unwrap());
     let sender = Sr25519 {
@@ -45,6 +46,12 @@ pub async fn run_transaction(transaction: Transaction) {
         hash, pubid, rec, token, token_type()
     );
 }
+
+// pub fn test_transaction(transaction: Transaction) {
+//     let
+
+// }
+
 pub async fn check_balance(cmd: String) {
     if cmd.eq("total-issuance") {
         let total = match total_issuance() {

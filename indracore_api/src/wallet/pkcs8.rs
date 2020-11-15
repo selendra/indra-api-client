@@ -2,13 +2,12 @@ use rand::{thread_rng, Rng};
 use sodalite::{
     secretbox, secretbox_open, SecretboxKey, SecretboxNonce, SECRETBOX_KEY_LEN, SECRETBOX_NONCE_LEN,
 };
-pub const SECRETBOX_BOXZEROBYTES: usize = 32;
-pub const SECRETBOX_ZEROBYTES: usize = 64;
+
+pub const SECRETBOX_BOXZEROBYTES: usize = 16;
+pub const SECRETBOX_ZEROBYTES: usize = 32;
 
 pub const PKCS8_DIVIDER: [u8; 5] = [161, 35, 3, 33, 0];
-pub const PKCS8_HEADER: [u8; 18] = [
-    48, 83, 2, 1, 1, 48, 5, 6, 3, 43, 101, 112, 4, 34, 4, 32, 64, 32,
-];
+pub const PKCS8_HEADER: [u8; 16] = [48, 83, 2, 1, 1, 48, 5, 6, 3, 43, 101, 112, 4, 34, 4, 32];
 
 pub const SEC_LENGTH: usize = 64;
 pub const SEED_LENGTH: usize = 32;

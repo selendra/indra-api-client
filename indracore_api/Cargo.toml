@@ -20,6 +20,7 @@ async-std = { version = "1.6.4", features = ["attributes"] }
 scale-info = { version = "0.4", default-features = false, features = ["derive"]}
 serde = { version = "1.0.115", default-features = false, features = ["derive"] }
 rustbreak = { version = "2.0.0-rc3", features=["bin_enc"] }
+rust-crypto = "0.2.36"
 
 schnorrkel = { version = "0.9.1", features = ["preaudit_deprecated", "u64_backend"], default-features = false }
 blake2-rfc = { version = "0.2.18" }

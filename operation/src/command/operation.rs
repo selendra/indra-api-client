@@ -17,7 +17,6 @@ pub struct Wallet {
     pub label: String,
     pub password: Option<String>,
     pub name: Option<String>,
-    pub advanced: Option<String>,
     pub location: Option<String>,
 }
 
@@ -69,7 +68,7 @@ Usage:
     operation listaddresses [-l <location>]
 Options:
     -l  --location   File location to save.
-    -n  --name       Create wallet name default indracore.
+    -n  --name       Create account name default indracore.
 ";
 
 const USAGE_GETWALLET: &'static str = "
@@ -81,9 +80,8 @@ Options:
     -k, --ecdsa     'Use SECP256k1/ECDSA/BIP39 cryptography'
     -s, --sr25519   'Use Schnorr/Ristretto x25519/BIP39 cryptography'
     
-    -n  --name       Create wallet name default indracore.
+    -n  --name       Create account name default indracore.
     -p  --password   Account password.
-    -a  --advanced   Create secret derivation path.
     -l  --location   File location to save.
 
 ";
@@ -290,7 +288,6 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
     let mut sr25519: bool = false;
 
     let mut password: Option<String> = None;
-    let mut advanced: Option<String> = None;
     let mut name: Option<String> = None;
     let mut location: Option<String> = None;
 
@@ -307,10 +304,6 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
             Arg::Short("n") | Arg::Long("name") => {
                 let msg = "Expected wallet name after --name.";
                 name = Some(expect_plain(&mut args, msg)?);
-            }
-            Arg::Short("a") | Arg::Long("advance") => {
-                let msg = "Expected //hard/soft///password after --advanced.";
-                advanced = Some(expect_plain(&mut args, msg)?);
             }
             Arg::Short("l") | Arg::Long("location") => {
                 let msg = "Expected path or directoty after --location.";
@@ -337,7 +330,6 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
         label: label.to_string(),
         password,
         name,
-        advanced,
         location,
     }))
 }

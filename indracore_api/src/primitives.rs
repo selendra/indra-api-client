@@ -14,6 +14,7 @@ pub fn url() -> String {
     let url = env::var("RPC");
     url.unwrap_or("ws://127.0.0.1:9944".to_string())
 }
+
 pub fn decimal() -> u32 {
     dotenv::dotenv().expect("!!! Failed to read .env file");
     let decimal = std::env::var("DECIMAL").unwrap();
