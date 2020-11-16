@@ -1,4 +1,4 @@
-use crate::operation::{ListWallet, Wallet};
+use crate::operation::{ListWallet, Wallet, WatchWallet};
 use indracore_api::{
     balance::check_balance::free_balance,
     keyring::accounid32,
@@ -60,4 +60,30 @@ pub fn list_wallet(wallet: ListWallet) {
         let bl = format!("{:?} {}", amount, token_type());
         address.print(bl);
     }
+}
+
+pub fn watch_wallet(wl: WatchWallet) {
+    let store = WalletStore::init(wl.location.as_deref(), wl.name.as_deref());
+    let addr = match wl.address {
+        Some(addr) => addr,
+        None => {
+            println!("Please input address -a <address>");
+            std::process::exit(1)
+        }
+    };
+    let _ = match accounid32(&addr) {
+        Ok(addr) => addr,
+        Err(_) => {
+            println!("Invalid address");
+            std::process::exit(1)
+        }
+    };
+    let name = match wl.name {
+        Some(name) => name,
+        None => "USER".to_string(),
+    };
+    let mut address = Address::default();
+    address.addr = addr;
+    address.label = name.to_uppercase();
+    store.save(address.clone());
 }

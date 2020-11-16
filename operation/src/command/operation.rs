@@ -6,12 +6,6 @@ pub struct Transaction {
     pub location: Option<String>,
 }
 
-#[derive(Debug, Eq, PartialEq)]
-pub struct ContractUpload {
-    pub uploader: Option<String>,
-    pub file: Option<String>,
-}
-
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Wallet {
     pub label: String,
@@ -19,6 +13,13 @@ pub struct Wallet {
     pub name: Option<String>,
     pub location: Option<String>,
     pub phrase: Option<String>,
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct WatchWallet {
+    pub address: Option<String>,
+    pub location: Option<String>,
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
@@ -35,7 +36,10 @@ Usage:
     operation --version
 Commands:
     transaction        transaction token between account.
-    balance            check amount of token
+    balance            check amount of token.
+    listaddresses      Prints the list of addresses and blance of each account.
+    watchaddress       Add a watchonly address.
+    getnewaddress      A simple Command Line Interface wallet for Indracore.
 Options:
     -h --help          Show this screen, or help about a command.
     -v --version       Show version.
@@ -63,12 +67,31 @@ Options:
 ";
 
 const USAGE_LISTWALLET: &'static str = "
-operation listaddresses -- Prints the list of addresses.
+operation listaddresses -- Prints the list of addresses and blance of each account.
 Usage:
     operation listaddresses [-l <location>]
 Options:
-    -l  --location   File location to save.
-    -n  --name       Create account name default indracore.
+    -l  --location    Location of your wallet.
+";
+
+const USAGE_WATCHADDRESS: &'static str = "
+operation watchaddress -- Add a watchonly address.
+Usage:
+    operation watchaddress [-a <address>] [-n<name>]
+Options:
+    -a  --addr        Account address to save.
+    -l  --location    Location of your wallet.
+    -n  --name        Create account name default indracore.
+";
+
+const USAGE_RESTOREWALLET: &'static str = "
+operation restore -- Add a watchonly address.
+Usage:
+    operation restore [-f <diretory>] [-n<name>]
+Options:
+    -f  --file        File diretory or path.
+    -l  --location    Location of your wallet.
+    -n  --name        Create account name default indracore.
 ";
 
 const USAGE_GETWALLET: &'static str = "
@@ -87,22 +110,13 @@ Options:
 
 ";
 
-// const USAGE_CONTRACT_UPLOAD: &'static str = "
-// operation contract-upload -- upload smart contract.
-// Usage:
-//     operation contract-upload [-u <account>] [-f <file>]
-// Options:
-//     -u --uloader <account>   Your account account.
-//     -f --file <file>          Your contract wasm file.
-// ";
-
 #[derive(Debug, Eq, PartialEq)]
 pub enum Cmd {
     Transaction(Transaction),
     Balance(String),
     GetWallet(Wallet),
     ListWallet(ListWallet),
-    // ContractUpload(ContractUpload),
+    WatchOnly(WatchWallet),
     Version,
     Help(String),
 }
@@ -114,7 +128,8 @@ pub fn print_usage(cmd: String) {
         "balance" => println!("{}", &USAGE_BALANCE[1..]),
         "getnewaddress" => println!("{}", &USAGE_GETWALLET[1..]),
         "listaddresses" => println!("{}", &USAGE_LISTWALLET[1..]),
-        // "contract-upload" => println!("{}", &USAGE_CONTRACT_UPLOAD[1..]),
+        "watchaddress" => println!("{}", &USAGE_WATCHADDRESS[1..]),
+        "restore" => println!("{}", &USAGE_RESTOREWALLET[1..]),
         _ => println!(
             "'{}' is not a Operation command. See 'operation --help'.",
             cmd
@@ -234,7 +249,8 @@ pub fn parse(argv: Vec<String>) -> Result<Cmd, String> {
         Arg::Plain("balance") => parse_balance(args),
         Arg::Plain("getnewaddress") => parse_get_wallet(args),
         Arg::Plain("listaddresses") => parse_list_wallet(args),
-        // Arg::Plain("contract-upload") => parse_contract_upload(args),
+        Arg::Plain("watchaddress") => parse_watchonly(args),
+        Arg::Plain("restore") => parse_restore(args),
         Arg::Long("version") => drain(args).and(Ok(Cmd::Version)),
         Arg::Short("h") | Arg::Long("help") => parse_help(args),
         _ => return unexpected(arg),
@@ -279,6 +295,66 @@ fn parse_list_wallet(mut args: ArgIter) -> Result<Cmd, String> {
     Ok(Cmd::ListWallet(ListWallet { location }))
 }
 
+fn parse_watchonly(mut args: ArgIter) -> Result<Cmd, String> {
+    let mut location: Option<String> = None;
+    let mut name: Option<String> = None;
+    let mut address: Option<String> = None;
+    while let Some(arg) = args.next() {
+        match arg.as_ref() {
+            Arg::Short("a") | Arg::Long("addr") => {
+                let msg = "Expected account address after --location.";
+                address = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("l") | Arg::Long("location") => {
+                let msg = "Expected path or directoty after --location.";
+                location = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("n") | Arg::Long("name") => {
+                let msg = "Expected account name after --name.";
+                name = Some(expect_plain(&mut args, msg)?);
+            }
+
+            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "watchaddress"),
+            _ => return unexpected(arg),
+        }
+    }
+    Ok(Cmd::WatchOnly(WatchWallet {
+        location,
+        name,
+        address,
+    }))
+}
+
+fn parse_restore(mut args: ArgIter) -> Result<Cmd, String> {
+    let mut location: Option<String> = None;
+    let mut name: Option<String> = None;
+    let mut file: Option<String> = None;
+    while let Some(arg) = args.next() {
+        match arg.as_ref() {
+            Arg::Short("f") | Arg::Long("file") => {
+                let msg = "Expected file diretory or path after --location.";
+                file = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("l") | Arg::Long("location") => {
+                let msg = "Expected path or directoty after --location.";
+                location = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("n") | Arg::Long("name") => {
+                let msg = "Expected account name after --name.";
+                name = Some(expect_plain(&mut args, msg)?);
+            }
+
+            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "restore"),
+            _ => return unexpected(arg),
+        }
+    }
+    Ok(Cmd::WatchOnly(WatchWallet {
+        location,
+        name,
+        address: file,
+    }))
+}
+
 fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
     let mut ed25519: bool = false;
     let mut ecdsa: bool = false;
@@ -300,7 +376,7 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
                 password = Some(expect_plain(&mut args, msg)?);
             }
             Arg::Short("n") | Arg::Long("name") => {
-                let msg = "Expected wallet name after --name.";
+                let msg = "Expected account name after --name.";
                 name = Some(expect_plain(&mut args, msg)?);
             }
             Arg::Short("l") | Arg::Long("location") => {
@@ -308,7 +384,7 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
                 location = Some(expect_plain(&mut args, msg)?);
             }
             Arg::Long("phrase") => {
-                let msg = "Expected path or directoty after --phrase.";
+                let msg = "Expected mnemonic or seed after --phrase.";
                 phrase = Some(expect_plain(&mut args, msg)?);
             }
 
@@ -336,30 +412,6 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
         phrase,
     }))
 }
-// fn parse_contract_upload(mut args: ArgIter) -> Result<Cmd, String> {
-//     let mut uploader: Option<String> = None;
-//     let mut file: Option<String> = None;
-
-//     while let Some(arg) = args.next() {
-//         match arg.as_ref() {
-//             Arg::Short("u") | Arg::Long("uploader") => {
-//                 let msg = "Expected account after --uploader.";
-//                 uploader = Some(expect_plain(&mut args, msg)?);
-//             }
-//             Arg::Short("f") | Arg::Long("file") => {
-//                 let msg = "Expected file after --file.";
-//                 file = Some(expect_plain(&mut args, msg)?);
-//             }
-//             Arg::Short("h") | Arg::Long("help") => return drain_help(args, "contract-upload"),
-//             _ => return unexpected(arg),
-//         }
-//     }
-//     let upload = ContractUpload {
-//         uploader: uploader,
-//         file: file,
-//     };
-//     Ok(Cmd::ContractUpload(upload))
-// }
 
 fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
     let mut sender: String = "".into();
