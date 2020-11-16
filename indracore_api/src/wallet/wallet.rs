@@ -25,13 +25,16 @@ pub struct Address {
 }
 
 impl Address {
-    pub fn print(&self) {
+    pub fn print(&self, bl: String) {
         if self.seed.len() == 0 {
-            println!("{:<15} {:<55} {:<7}", self.label, self.addr, "*");
+            println!(
+                "{:<15} {:<55} {:<12} {:<25}",
+                self.label, self.addr, "*", bl
+            );
         } else {
             println!(
-                "{:<15} {:<55} {:<7}",
-                self.label, self.addr, self.crypto_type
+                "{:<15} {:<55} {:<12} {:<25}",
+                self.label, self.addr, self.crypto_type, bl
             );
         }
     }
@@ -146,7 +149,7 @@ impl Address {
                     .as_millis() as u64;
                 let address = Address {
                     label: String::default(),
-                    addr: addr,
+                    addr,
                     crypto_type: T::crypto_type().to_owned(),
                     network: Network::default().into(),
                     seed: seed_slice.to_vec(),
@@ -171,7 +174,7 @@ pub struct Wallet {
 impl Wallet {
     pub fn new(name: String) -> Self {
         Self {
-            name: name,
+            name,
             address_book: vec![],
         }
     }

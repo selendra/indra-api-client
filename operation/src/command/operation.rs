@@ -1,9 +1,9 @@
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Transaction {
-    pub sender: Option<String>,
-    pub receiver: Option<String>,
-    pub password: Option<String>,
-    pub amount: Option<String>,
+    pub sender: String,
+    pub receiver: String,
+    pub amount: String,
+    pub location: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -18,11 +18,11 @@ pub struct Wallet {
     pub password: Option<String>,
     pub name: Option<String>,
     pub location: Option<String>,
+    pub phrase: Option<String>,
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct ListWallet {
-    pub name: Option<String>,
     pub location: Option<String>,
 }
 
@@ -48,9 +48,9 @@ Usage:
     operation transaction [-s <account>] [-p <password>] [-r <accountid>] [-a <amount>]
 Options:
     -s --sender <account>       Your account account.
-    -p --password <password>    Your account password.
     -r --receiver <accountid>   Account Id you want to send.
     -a --amount <amount>        Amount of token to send
+    -l  --location              Location of your wallet.
 ";
 
 const USAGE_BALANCE: &'static str = "
@@ -81,8 +81,9 @@ Options:
     -s, --sr25519   'Use Schnorr/Ristretto x25519/BIP39 cryptography'
     
     -n  --name       Create account name default indracore.
-    -p  --password   Account password.
+    -p  --password   Password //hard/soft///scret.
     -l  --location   File location to save.
+        --phrase     Create account from phrase
 
 ";
 
@@ -264,22 +265,18 @@ fn parse_balance(mut args: ArgIter) -> Result<Cmd, String> {
 
 fn parse_list_wallet(mut args: ArgIter) -> Result<Cmd, String> {
     let mut location: Option<String> = None;
-    let mut name: Option<String> = None;
     while let Some(arg) = args.next() {
         match arg.as_ref() {
             Arg::Short("l") | Arg::Long("location") => {
                 let msg = "Expected path or directoty after --location.";
                 location = Some(expect_plain(&mut args, msg)?);
             }
-            Arg::Short("n") | Arg::Long("name") => {
-                let msg = "Expected wallet name after --name.";
-                name = Some(expect_plain(&mut args, msg)?);
-            }
-            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "balance"),
+
+            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "listaddresses"),
             _ => return unexpected(arg),
         }
     }
-    Ok(Cmd::ListWallet(ListWallet { location, name }))
+    Ok(Cmd::ListWallet(ListWallet { location }))
 }
 
 fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
@@ -290,6 +287,7 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
     let mut password: Option<String> = None;
     let mut name: Option<String> = None;
     let mut location: Option<String> = None;
+    let mut phrase: Option<String> = None;
 
     while let Some(arg) = args.next() {
         match arg.as_ref() {
@@ -308,6 +306,10 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
             Arg::Short("l") | Arg::Long("location") => {
                 let msg = "Expected path or directoty after --location.";
                 location = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Long("phrase") => {
+                let msg = "Expected path or directoty after --phrase.";
+                phrase = Some(expect_plain(&mut args, msg)?);
             }
 
             Arg::Short("h") | Arg::Long("help") => return drain_help(args, "getnewaddress"),
@@ -331,6 +333,7 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
         password,
         name,
         location,
+        phrase,
     }))
 }
 // fn parse_contract_upload(mut args: ArgIter) -> Result<Cmd, String> {
@@ -359,28 +362,28 @@ fn parse_get_wallet(mut args: ArgIter) -> Result<Cmd, String> {
 // }
 
 fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
-    let mut sender: Option<String> = None;
-    let mut receiver: Option<String> = None;
-    let mut amount: Option<String> = None;
-    let mut password: Option<String> = None;
+    let mut sender: String = "".into();
+    let mut receiver: String = "".into();
+    let mut amount: String = "".into();
+    let mut location: Option<String> = None;
 
     while let Some(arg) = args.next() {
         match arg.as_ref() {
             Arg::Short("s") | Arg::Long("sender") => {
                 let msg = "Expected account after --sender.";
-                sender = Some(expect_plain(&mut args, msg)?);
-            }
-            Arg::Short("p") | Arg::Long("password") => {
-                let msg = "Expected password after --password.";
-                password = Some(expect_plain(&mut args, msg)?);
+                sender = expect_plain(&mut args, msg)?;
             }
             Arg::Short("r") | Arg::Long("receiver") => {
                 let msg = "Expected account id after --receiver.";
-                receiver = Some(expect_plain(&mut args, msg)?);
+                receiver = expect_plain(&mut args, msg)?;
             }
             Arg::Short("a") | Arg::Long("amount") => {
                 let msg = "Expected amount of token after --amount.";
-                amount = Some(expect_plain(&mut args, msg)?);
+                amount = expect_plain(&mut args, msg)?;
+            }
+            Arg::Short("l") | Arg::Long("location") => {
+                let msg = "Expected path or directoty after --location.";
+                location = Some(expect_plain(&mut args, msg)?);
             }
             Arg::Short("h") | Arg::Long("help") => return drain_help(args, "transaction"),
             _ => return unexpected(arg),
@@ -391,7 +394,7 @@ fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
         sender,
         receiver,
         amount,
-        password,
+        location,
     };
 
     Ok(Cmd::Transaction(transaction))
