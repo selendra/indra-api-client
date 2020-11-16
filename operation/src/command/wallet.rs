@@ -1,9 +1,9 @@
-use crate::operation::{ListWallet, Wallet, WatchWallet};
+use crate::operation::{Backup, ListWallet, RestoreWallet, Wallet, WatchWallet};
 use indracore_api::{
     balance::check_balance::free_balance,
     keyring::accounid32,
     primitives::{token_type, Token},
-    wallet::{crypto::*, wallet::*},
+    wallet::{crypto::*, keystore::Keystore, wallet::*},
 };
 
 pub fn get_wallet(wallet: Wallet) {
@@ -86,4 +86,81 @@ pub fn watch_wallet(wl: WatchWallet) {
     address.addr = addr;
     address.label = name.to_uppercase();
     store.save(address.clone());
+}
+
+pub fn restore_wallet(rw: RestoreWallet) {
+    let store = WalletStore::init(rw.location.as_deref(), None);
+
+    let file = match rw.file {
+        Some(f) => f,
+        None => {
+            println!("Input file to restore");
+            std::process::exit(1)
+        }
+    };
+    println!("{:?}", file);
+    let keystore = match Keystore::parse_from_file(file) {
+        Ok(keystore) => keystore,
+        Err(_) => {
+            println!("Failed to parse keystore file");
+            std::process::exit(1)
+        }
+    };
+
+    if let Ok(address) = Address::from_keystore(keystore, rw.password) {
+        store.save(address.clone());
+        println!("{} is restored", address.addr);
+    } else {
+        println!("Failed to recover address");
+    }
+}
+
+pub fn backup(bp: Backup) {
+    let store = WalletStore::init(bp.location.as_deref(), None);
+    let file = match bp.file {
+        Some(f) => f,
+        None => {
+            println!("Input file to location to backup");
+            std::process::exit(1)
+        }
+    };
+
+    let addr = match bp.address {
+        Some(addr) => addr,
+        None => {
+            println!("Input addresss to backup");
+            std::process::exit(1)
+        }
+    };
+
+    let address = match store.read(&addr) {
+        Some(address) => address,
+        None => {
+            println!("`{}` related address does not exist.", addr);
+            std::process::exit(1)
+        }
+    };
+    let path = std::path::Path::new(&file);
+    let full_path = if path.ends_with("/") || path.is_dir() {
+        let file_name = format!("{}.json", address.addr.as_str());
+        let mut path = path.to_path_buf();
+        path.push(file_name);
+        path
+    } else {
+        path.to_path_buf()
+    };
+    if full_path.exists() {
+        eprintln!("File `{}` aleady exists", full_path.to_str().unwrap());
+        std::process::exit(1)
+    };
+    let keystore = address.into_keystore(bp.password);
+    if let Err(e) = std::fs::write(full_path.clone(), keystore.to_json()) {
+        println!("Failed to write to file: {:?}", e);
+    } else {
+        println!(
+            "Address `{}` is backed up to file `{}`",
+            address.addr,
+            full_path.to_str().unwrap()
+        );
+    }
 }

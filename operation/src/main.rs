@@ -13,10 +13,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(Cmd::Help(cmd)) => operation::print_usage(cmd),
         Ok(Cmd::Version) => operation::print_version(),
         Ok(Cmd::Balance(cmd)) => transaction::check_balance(cmd).await,
-        // Ok(Cmd::ContractUpload(_cp)) => (),
         Ok(Cmd::GetWallet(wallet)) => wallet::get_wallet(wallet),
         Ok(Cmd::ListWallet(ls)) => wallet::list_wallet(ls),
         Ok(Cmd::WatchOnly(wl)) => wallet::watch_wallet(wl),
+        Ok(Cmd::Restore(rw)) => wallet::restore_wallet(rw),
+        Ok(Cmd::Backup(bp)) => wallet::backup(bp),
         Ok(Cmd::Transaction(tx)) => transaction::run_transaction(tx),
         Err(msg) => {
             println!("{}", msg);

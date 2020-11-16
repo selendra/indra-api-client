@@ -23,8 +23,23 @@ pub struct WatchWallet {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
+pub struct RestoreWallet {
+    pub file: Option<String>,
+    pub location: Option<String>,
+    pub password: Option<String>,
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct ListWallet {
     pub location: Option<String>,
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct Backup {
+    pub address: Option<String>,
+    pub file: Option<String>,
+    pub location: Option<String>,
+    pub password: Option<String>,
 }
 
 const USAGE: &'static str = "
@@ -39,7 +54,9 @@ Commands:
     balance            check amount of token.
     listaddresses      Prints the list of addresses and blance of each account.
     watchaddress       Add a watchonly address.
-    getnewaddress      A simple Command Line Interface wallet for Indracore.
+    getnewaddress      Generate a new address associated with label, deafult cryptography is sr25519
+    restore            Restore address from json file
+    backup             Backup specified address to local json file
 Options:
     -h --help          Show this screen, or help about a command.
     -v --version       Show version.
@@ -82,16 +99,27 @@ Options:
     -a  --addr        Account address to save.
     -l  --location    Location of your wallet.
     -n  --name        Create account name default indracore.
+    -p  --password    Password of account.
 ";
 
 const USAGE_RESTOREWALLET: &'static str = "
-operation restore -- Add a watchonly address.
+operation restore -- Restore address from json file.
 Usage:
     operation restore [-f <diretory>] [-n<name>]
 Options:
     -f  --file        File diretory or path.
     -l  --location    Location of your wallet.
-    -n  --name        Create account name default indracore.
+";
+
+const USAGE_BACKUP: &'static str = "
+operation backup  --  Backup specified address to local json file
+Usage:
+    operation restore [-f <diretory>] [-n<name>]
+Options:
+    -f  --file        File diretory or path.
+    -l  --location    Location of your wallet.
+    -a  --addr        Account address to save.
+    -p  --password    Password of account.
 ";
 
 const USAGE_GETWALLET: &'static str = "
@@ -117,6 +145,8 @@ pub enum Cmd {
     GetWallet(Wallet),
     ListWallet(ListWallet),
     WatchOnly(WatchWallet),
+    Restore(RestoreWallet),
+    Backup(Backup),
     Version,
     Help(String),
 }
@@ -130,6 +160,7 @@ pub fn print_usage(cmd: String) {
         "listaddresses" => println!("{}", &USAGE_LISTWALLET[1..]),
         "watchaddress" => println!("{}", &USAGE_WATCHADDRESS[1..]),
         "restore" => println!("{}", &USAGE_RESTOREWALLET[1..]),
+        "backup" => println!("{}", &USAGE_BACKUP[1..]),
         _ => println!(
             "'{}' is not a Operation command. See 'operation --help'.",
             cmd
@@ -251,6 +282,7 @@ pub fn parse(argv: Vec<String>) -> Result<Cmd, String> {
         Arg::Plain("listaddresses") => parse_list_wallet(args),
         Arg::Plain("watchaddress") => parse_watchonly(args),
         Arg::Plain("restore") => parse_restore(args),
+        Arg::Plain("backup") => parse_backup(args),
         Arg::Long("version") => drain(args).and(Ok(Cmd::Version)),
         Arg::Short("h") | Arg::Long("help") => parse_help(args),
         _ => return unexpected(arg),
@@ -327,8 +359,39 @@ fn parse_watchonly(mut args: ArgIter) -> Result<Cmd, String> {
 
 fn parse_restore(mut args: ArgIter) -> Result<Cmd, String> {
     let mut location: Option<String> = None;
-    let mut name: Option<String> = None;
     let mut file: Option<String> = None;
+    let mut password: Option<String> = None;
+    while let Some(arg) = args.next() {
+        match arg.as_ref() {
+            Arg::Short("f") | Arg::Long("file") => {
+                let msg = "Expected file diretory or path after --location.";
+                file = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("l") | Arg::Long("location") => {
+                let msg = "Expected path or directoty after --location.";
+                location = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("p") | Arg::Long("password") => {
+                let msg = "Expected password after --password.";
+                password = Some(expect_plain(&mut args, msg)?);
+            }
+
+            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "restore"),
+            _ => return unexpected(arg),
+        }
+    }
+    Ok(Cmd::Restore(RestoreWallet {
+        location,
+        file,
+        password,
+    }))
+}
+
+fn parse_backup(mut args: ArgIter) -> Result<Cmd, String> {
+    let mut location: Option<String> = None;
+    let mut address: Option<String> = None;
+    let mut file: Option<String> = None;
+    let mut password: Option<String> = None;
     while let Some(arg) = args.next() {
         match arg.as_ref() {
             Arg::Short("f") | Arg::Long("file") => {
@@ -341,17 +404,22 @@ fn parse_restore(mut args: ArgIter) -> Result<Cmd, String> {
             }
             Arg::Short("n") | Arg::Long("name") => {
                 let msg = "Expected account name after --name.";
-                name = Some(expect_plain(&mut args, msg)?);
+                address = Some(expect_plain(&mut args, msg)?);
+            }
+            Arg::Short("p") | Arg::Long("password") => {
+                let msg = "Expected password after --password.";
+                password = Some(expect_plain(&mut args, msg)?);
             }
 
-            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "restore"),
+            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "backup"),
             _ => return unexpected(arg),
         }
     }
-    Ok(Cmd::WatchOnly(WatchWallet {
+    Ok(Cmd::Backup(Backup {
         location,
-        name,
-        address: file,
+        address,
+        file,
+        password,
     }))
 }
 
