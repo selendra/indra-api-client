@@ -12,7 +12,7 @@ Selendra-client is a client generic tools build to interact with indracore and o
 - [x] List Wallet.
 - [x] Check Balance.
 - [x] Asset Transfer.
-- [] Restore from Json file.
+- [x] Restore from Json file.
 
 ### Build 
 
