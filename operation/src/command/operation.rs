@@ -114,7 +114,7 @@ Options:
 const USAGE_BACKUP: &'static str = "
 operation backup  --  Backup specified address to local json file
 Usage:
-    operation restore [-f <diretory>] [-n<name>]
+    operation backup [-f <diretory>] [-n<name>]
 Options:
     -f  --file        File diretory or path.
     -l  --location    Location of your wallet.
@@ -402,8 +402,8 @@ fn parse_backup(mut args: ArgIter) -> Result<Cmd, String> {
                 let msg = "Expected path or directoty after --location.";
                 location = Some(expect_plain(&mut args, msg)?);
             }
-            Arg::Short("n") | Arg::Long("name") => {
-                let msg = "Expected account name after --name.";
+            Arg::Short("a") | Arg::Long("addr") => {
+                let msg = "Expected account address after --name.";
                 address = Some(expect_plain(&mut args, msg)?);
             }
             Arg::Short("p") | Arg::Long("password") => {
