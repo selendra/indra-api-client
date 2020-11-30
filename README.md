@@ -21,6 +21,13 @@ Selendra-client is a client generic tools build to interact with indracore and o
 
 TODO
 
+#### Install via Cargo
+
+If you are a Rust developer, you can install via cargo:
+```bash
+cargo install operation --git https://github.com/selendra/selendra-client.git
+```
+
 #### Install from source
 
 to Install the Selendra-Client from source
@@ -32,6 +39,7 @@ $ ./script/init.sh
 $ cargo build --release
 ```
 * note
+	create .env file and input your rpc (default = ws://127.0.0.1:9944)
 	please install [Rust](https://www.rust-lang.org/tools/install) before build
 
 #### Install On Snap
