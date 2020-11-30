@@ -99,7 +99,6 @@ Options:
     -a  --addr        Account address to save.
     -l  --location    Location of your wallet.
     -n  --name        Create account name default indracore.
-    -p  --password    Password of account.
 ";
 
 const USAGE_RESTOREWALLET: &'static str = "
