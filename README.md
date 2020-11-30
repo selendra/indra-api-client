@@ -88,7 +88,7 @@ Generate a new random address
 $ ./operation getnewaddress --ed25519 --name "FIRST"
 5E9CDTeZ2qE1tvio5KcQtYV3hjDGTyMLXdRmn9RuCYAhmTZc
 ```
-Create from secret phrase
+Generate from secret phrase
 ```bash
 $ ./operation getnewaddress --phrase "genius alone lottery oval jump name member journey since age dance arm" --name "genius"
 5FvEDMPKxw9Yk8zak4G6sHbawV2Nyc8odeUKPo1m6U8RgZ3s
