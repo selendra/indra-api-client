@@ -39,8 +39,8 @@ $ ./script/init.sh
 $ cargo build --release
 ```
 * note
-	create .env file and input your rpc (default = ws://127.0.0.1:9944)
-	please install [Rust](https://www.rust-lang.org/tools/install) before build
+	- create .env file and input your rpc (default = ws://127.0.0.1:9944)
+	- please install [Rust](https://www.rust-lang.org/tools/install) before build
 
 #### Install On Snap
 
