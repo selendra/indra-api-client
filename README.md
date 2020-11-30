@@ -25,7 +25,7 @@ TODO
 
 If you are a Rust developer, you can install via cargo:
 ```bash
-cargo install operation --git https://github.com/selendra/selendra-client.git
+$ cargo install operation --git https://github.com/selendra/selendra-client.git
 ```
 
 #### Install from source
