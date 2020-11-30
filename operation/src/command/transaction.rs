@@ -101,7 +101,7 @@ pub async fn check_balance(cmd: String) {
             }
         };
         let amount = Token::uamount(total);
-        dark_cyan_ln!("{:?} {}", amount, token_type())
+        dark_cyan_ln!("total supply {:?} {}", amount, token_type())
     } else {
         let id = match accounid32(&cmd) {
             Ok(id) => id,
@@ -118,6 +118,6 @@ pub async fn check_balance(cmd: String) {
             }
         };
         let amount = Token::famount(amount);
-        dark_cyan_ln!("{:?} {}", amount, token_type())
+        dark_cyan_ln!("balance {:?} {}", amount, token_type())
     }
 }
