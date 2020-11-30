@@ -307,7 +307,11 @@ fn parse_balance(mut args: ArgIter) -> Result<Cmd, String> {
     if total_issuance {
         Ok(Cmd::Balance("total-issuance".to_string()))
     } else {
-        Ok(Cmd::Balance(accountid.unwrap()))
+        let accountid = match accountid {
+            Some(id) => id,
+            None => "".to_owned()
+        };
+        Ok(Cmd::Balance(accountid))
     }
 }
 
