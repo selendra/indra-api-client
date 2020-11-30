@@ -59,7 +59,7 @@ TODO
 
 ```bash
 $ ./operation -h
-operation -- operation infomation and transaction.
+operation -- A simple command line interface wallet for selendra/substrate.
 
 Usage:
     operation <command> [<args>...]
@@ -133,5 +133,24 @@ Show the balances of addresses
 ```bash
 ./operation balance --free-balance "5HigHwALzgPyXbg9o6tJfHE49DDMKbZxgMATJuomY4mhCvFD"
 balance 1.0 unit
+```
+#### `transfer`
+Transfer balance 
+
+Use label
+```bash
+./operation transfer --sender "shell" --receiver "5HigHwALzgPyXbg9o6tJfHE49DDMKbZxgMATJuomY4mhCvFD" --amount 100
+>> Balance transfer extrinsic submitted: ()
+        ** from: 5DA3scF5FRbGioWoZ2gBNP12gx9UC2heT4fFu7cRwA5m1nBg
+        ** to: 5CZp9sb9sBYmbfhd7BJjMQ87RZ7xqrJoZELqYZaoSjDVMzyp
+        ** amount 100.00 unit
+```
+Use address
+```bash
+./operation transfer --sender "5CZp9sb9sBYmbfhd7BJjMQ87RZ7xqrJoZELqYZaoSjDVMzyp" --receiver "5HigHwALzgPyXbg9o6tJfHE49DDMKbZxgMATJuomY4mhCvFD" --amount 100
+>> Balance transfer extrinsic submitted: ()
+        ** from: 5DA3scF5FRbGioWoZ2gBNP12gx9UC2heT4fFu7cRwA5m1nBg
+        ** to: 5CZp9sb9sBYmbfhd7BJjMQ87RZ7xqrJoZELqYZaoSjDVMzyp
+        ** amount 100.00 unit
 ```
 
