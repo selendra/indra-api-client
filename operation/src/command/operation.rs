@@ -119,7 +119,7 @@ Options:
     -f  --file        File diretory or path.
     -l  --location    Location of your wallet.
     -a  --addr        Account address to save.
-    -p  --password    Password of account.
+    -p  --password    Password to encrypt file.
 ";
 
 const USAGE_GETWALLET: &'static str = "
