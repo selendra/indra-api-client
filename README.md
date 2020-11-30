@@ -23,7 +23,16 @@ TODO
 
 #### Install from source
 
-TODO
+to Install the Selendra-Client from source
+
+```sh
+$ git clone https://github.com/selendra/selendra-client.git
+$ cd selendra-client
+$ ./script/init.sh
+$ cargo build --release
+```
+* note
+	please install [Rust](https://www.rust-lang.org/tools/install) before build
 
 #### Install On Snap
 
