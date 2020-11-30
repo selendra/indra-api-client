@@ -50,7 +50,7 @@ impl Address {
             encoding: Encoding {
                 content: vec!["pkcs8".to_owned()],
                 r#type: "xsalsa20-poly1305".to_owned(),
-                version: "2".to_owned(),
+                version: "3".to_owned(),
             },
             meta: json!({
               "genesisHash": Network::default().genesis_hash(),

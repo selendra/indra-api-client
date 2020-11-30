@@ -1,5 +1,5 @@
 pub const INDRACORE_GENESIS_HASH: &'static str =
-    "0x1c37775896d0cb956fd15eba915fdd86f2d7038881f071bdd725e40ec70135df";
+    "0x5133128294382b218bca52a72a36f4bb826d34ae4dc21e8f0436faf41c729e88";
 #[derive(Clone, Eq, PartialEq, Debug, Copy)]
 pub enum Network {
     Indracore,
