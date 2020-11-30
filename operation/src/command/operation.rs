@@ -109,6 +109,7 @@ Usage:
 Options:
     -f  --file        File diretory or path.
     -l  --location    Location of your wallet.
+    -p  --password    Password to decrypt file.
 ";
 
 const USAGE_BACKUP: &'static str = "
