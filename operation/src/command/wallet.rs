@@ -83,9 +83,10 @@ pub fn watch_wallet(wl: WatchWallet) {
         None => "USER".to_string(),
     };
     let mut address = Address::default();
-    address.addr = addr;
+    address.addr = addr.clone();
     address.label = name.to_uppercase();
     store.save(address.clone());
+    println!("{} is added", addr.clone());
 }
 
 pub fn restore_wallet(rw: RestoreWallet) {
