@@ -153,4 +153,5 @@ Use address
         ** to: 5CZp9sb9sBYmbfhd7BJjMQ87RZ7xqrJoZELqYZaoSjDVMzyp
         ** amount 100.00 unit
 ```
+How to use other tutorial find at [Selendra Official Document](https://docs.selendra.org)
 
