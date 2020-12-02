@@ -14,25 +14,6 @@ Selendra-client is a client generic tools build to interact with indracore and o
 - [x] Asset Transfer.
 - [x] Restore and backup from Json file.
 
-### Build 
-
-### Install
-#### Install from PIX
-
-TODO
-#### Install On Snap
-
-TODO
-
-
-#### Install MacOS
-
-TODO
-
-#### Install on Windows OS
-
-TODO
-
 #### Install via Cargo
 
 If you are a Rust developer, you can install via cargo:
@@ -153,4 +134,3 @@ Use address
         ** amount 100.00 unit
 ```
 How to use other tutorial find at [Selendra Official Document](https://docs.selendra.org)
-
