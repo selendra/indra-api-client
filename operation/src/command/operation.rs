@@ -43,14 +43,14 @@ pub struct Backup {
 }
 
 const USAGE: &'static str = "
-operation -- operation infomation and transaction.
+operation -- A simple command line interface wallet for selendra/substrate.
 
 Usage:
     operation <command> [<args>...]
     operation -h | --help
     operation --version
 Commands:
-    transaction        transaction token between account.
+    transfer           transfer token between account.
     balance            check amount of token.
     listaddresses      Prints the list of addresses and blance of each account.
     watchaddress       Add a watchonly address.
@@ -64,9 +64,9 @@ See 'operation <command> --help' for information on a specific command.
 ";
 
 const USAGE_TRANSACTION: &'static str = "
-operation transaction -- transaction token between account.
+operation transfer -- transfer token between account.
 Usage:
-    operation transaction [-s <account>] [-p <password>] [-r <accountid>] [-a <amount>]
+    operation transfer [-s <account>] [-p <password>] [-r <accountid>] [-a <amount>]
 Options:
     -s --sender <account>       Your account account.
     -r --receiver <accountid>   Account Id you want to send.
@@ -154,7 +154,7 @@ pub enum Cmd {
 pub fn print_usage(cmd: String) {
     match &cmd[..] {
         "operation" => println!("{}", &USAGE[1..]),
-        "transaction" => println!("{}", &USAGE_TRANSACTION[1..]),
+        "transfer" => println!("{}", &USAGE_TRANSACTION[1..]),
         "balance" => println!("{}", &USAGE_BALANCE[1..]),
         "getnewaddress" => println!("{}", &USAGE_GETWALLET[1..]),
         "listaddresses" => println!("{}", &USAGE_LISTWALLET[1..]),
@@ -276,7 +276,7 @@ pub fn parse(argv: Vec<String>) -> Result<Cmd, String> {
     };
 
     match arg.as_ref() {
-        Arg::Plain("transaction") => parse_transaction(args),
+        Arg::Plain("transfer") => parse_transaction(args),
         Arg::Plain("balance") => parse_balance(args),
         Arg::Plain("getnewaddress") => parse_get_wallet(args),
         Arg::Plain("listaddresses") => parse_list_wallet(args),
@@ -509,19 +509,19 @@ fn parse_transaction(mut args: ArgIter) -> Result<Cmd, String> {
                 let msg = "Expected path or directoty after --location.";
                 location = Some(expect_plain(&mut args, msg)?);
             }
-            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "transaction"),
+            Arg::Short("h") | Arg::Long("help") => return drain_help(args, "transfer"),
             _ => return unexpected(arg),
         }
     }
 
-    let transaction = Transaction {
+    let transfer = Transaction {
         sender,
         receiver,
         amount,
         location,
     };
 
-    Ok(Cmd::Transaction(transaction))
+    Ok(Cmd::Transaction(transfer))
 }
 
 fn parse_help(mut args: ArgIter) -> Result<Cmd, String> {

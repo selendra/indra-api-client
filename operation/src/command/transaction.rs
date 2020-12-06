@@ -15,10 +15,13 @@ use indracore_api::{
 pub fn run_transaction(tx: Transaction) {
     let store = WalletStore::init(tx.location.as_deref(), None);
 
-    let from_address = store
-        .read(&tx.sender)
-        .ok_or("This Addrees not exit")
-        .unwrap();
+    let from_address = match store.read(&tx.sender.to_uppercase()).ok_or("") {
+        Ok(addr) => addr,
+        Err(_) => {
+            e_red_ln!("This addrees not exit");
+            std::process::exit(1);
+        }
+    };
     if from_address.is_watchonly() {
         e_red_ln!("This account only for watch");
         std::process::exit(1);
