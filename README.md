@@ -46,7 +46,7 @@ Usage:
     operation -h | --help
     operation --version
 Commands:
-    transaction        transfer token between account.
+    transfer           transfer token between account.
     balance            check amount of token.
     listaddresses      Prints the list of addresses and blance of each account.
     watchaddress       Add a watchonly address.
