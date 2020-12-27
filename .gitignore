@@ -11,3 +11,4 @@ note.txt
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+rest_api_mock.sh
