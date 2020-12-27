@@ -1,35 +1,30 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-use cli::{wallet};
+use actix_web::{web, App, HttpServer, Result, HttpResponse};
+use cli::{ 
+    models::Wallet,
+    wallet::get_wallet,
+} ;
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Service Working!")
-}
-
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-async fn gen_wallet() -> impl Responder {
-    HttpResponse::Ok().body(wallet::get_wallet(Wallet))
-    // wallets::get_wallet(wallet)
-}
-
-async fn check_balance() -> impl Responder {
-    HttpResponse::Ok().body("Start work on POST!")
+/// extract `Info` using serde
+async fn http_get_wallet(wl: web::Json<Wallet>) -> Result<HttpResponse> {
+    let wallet = Wallet {
+        label: wl.label.clone(),
+        name: wl.name.clone(),
+        location: wl.location.clone(),
+        phrase: wl.phrase.clone(),
+        password: wl.password.clone(),
+    };
+    let res = get_wallet(wallet);
+    Ok(
+        HttpResponse::Ok().json(res)
+    )
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    HttpServer::new(|| 
         App::new()
-            .service(hello)
-            .service(echo)
-            .route("/getwallet", web::get().to(gen_wallet))
-            .route("/getbalance", web::get().to(check_balance))
-    })
-    .bind("127.0.0.1:9002")?
-    .run()
-    .await
+        .route("/", web::post().to(http_get_wallet)))
+        .bind("127.0.0.1:8080")?
+        .run()
+        .await
 }

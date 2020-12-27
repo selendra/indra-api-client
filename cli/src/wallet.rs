@@ -1,12 +1,13 @@
-use crate::models::{Backup, ListWallet, RestoreWallet, Wallet, WatchWallet};
+use crate::models::{Backup, ListWallet, RestoreWallet, Wallet, WatchWallet, AddrMnemonic};
 use indracore_api::{
     balance::check_balance::free_balance,
     keyring::accounid32,
     primitives::{token_type, Token},
     wallet::{crypto::*, keystore::Keystore, wallet::*},
 };
+use colour::dark_cyan_ln;
 
-pub fn get_wallet(wallet: Wallet) {
+pub fn get_wallet(wallet: Wallet) -> AddrMnemonic {
     let store = WalletStore::init(wallet.location.as_deref(), wallet.name.as_deref());
     let mut address = match wallet.phrase {
         Some(phrase) => {
@@ -41,9 +42,24 @@ pub fn get_wallet(wallet: Wallet) {
         Some(name) => name,
         None => "USER".to_string(),
     };
+    let mnemonic = address.mnemonic.clone();
+
     address.label = name.to_uppercase();
+    address.mnemonic = "".to_string();
     store.save(address.clone());
-    println!("{}", address.addr);
+
+    AddrMnemonic {
+        address: address.addr,
+        mnemonic: mnemonic
+    }
+}
+
+pub fn op_get_wallet(wallet: Wallet) {
+    let res = get_wallet(wallet);
+    dark_cyan_ln!(
+        "\t>> Address: {}\n\t>> Mnemonic: {}\n\t",
+        res.address, res.mnemonic
+    );
 }
 
 pub fn list_wallet(wallet: ListWallet) {

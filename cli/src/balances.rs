@@ -1,4 +1,4 @@
-use crate::models::Transaction;
+use crate::models::{ Transaction, TransactionOutput};
 use colour::{dark_cyan_ln, e_red_ln};
 use indracore_api::wallet::{crypto::*, wallet::*};
 use indracore_api::{
@@ -12,7 +12,7 @@ use indracore_api::{
     },
 };
 
-pub fn run_transaction(tx: Transaction) {
+pub fn run_transaction(tx: Transaction) -> TransactionOutput {
     let store = WalletStore::init(tx.location.as_deref(), None);
 
     let from_address = match store.read(&tx.sender.to_uppercase()).ok_or("") {
@@ -88,13 +88,24 @@ pub fn run_transaction(tx: Transaction) {
             _ => unreachable!(),
         };
     });
+    TransactionOutput {
+        hash: format!("{:?}", hash),
+        sender: public_id,
+        receiver: tx.receiver,
+        amount: tx.amount,
+        symbol:  token_type()
+    }
+}
+
+pub fn op_transaction(tx: Transaction){
+    let res = run_transaction(tx);
     dark_cyan_ln!(
         ">> Balance transfer extrinsic submitted: {:?}\n\t** from: {}\n\t** to: {}\n\t** amount {} {}",
-        hash, public_id, tx.receiver, tx.amount, token_type()
+        res.hash, res.sender, res.receiver, res.amount, res.symbol
     );
 }
 
-pub async fn check_balance(cmd: String) {
+pub fn check_balance(cmd: String) {
     if cmd.eq("total-issuance") {
         let total = match total_issuance() {
             Ok(total) => total,

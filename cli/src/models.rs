@@ -1,4 +1,21 @@
-#[derive(Debug, Eq, PartialEq, Clone)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AddrMnemonic {
+    pub address: String,
+    pub mnemonic:String
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransactionOutput {
+    pub hash: String,
+    pub sender: String,
+    pub receiver: String,
+    pub amount: String,
+    pub symbol: String
+}
+
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Transaction {
     pub sender: String,
     pub receiver: String,
@@ -6,12 +23,16 @@ pub struct Transaction {
     pub location: Option<String>,
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Wallet {
     pub label: String,
+    #[serde(default)]
     pub password: Option<String>,
+    #[serde(default)]
     pub name: Option<String>,
+    #[serde(default)]
     pub location: Option<String>,
+    #[serde(default)]
     pub phrase: Option<String>,
 }
 

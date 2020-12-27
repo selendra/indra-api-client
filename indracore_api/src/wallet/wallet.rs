@@ -22,6 +22,7 @@ pub struct Address {
     pub seed: Vec<u8>,
     pub network: String,
     pub created_at: u64,
+    pub mnemonic: String
 }
 
 impl Address {
@@ -121,7 +122,7 @@ impl Address {
     }
 
     pub fn generate<T: Crypto>(pass: Option<&str>) -> Self {
-        let (pair, _, seed) = T::Pair::generate_with_phrase(pass);
+        let (pair, mnemonic, seed) = T::Pair::generate_with_phrase(pass);
         let seed_slice: &[u8] = seed.as_ref();
         let addr = T::to_address(&pair);
         let now = SystemTime::now()
@@ -135,6 +136,7 @@ impl Address {
             network: Network::default().into(),
             seed: seed_slice.to_vec(),
             created_at: now,
+            mnemonic: mnemonic.to_string()
         }
     }
 
@@ -154,6 +156,7 @@ impl Address {
                     network: Network::default().into(),
                     seed: seed_slice.to_vec(),
                     created_at: now,
+                    mnemonic: phrase.to_string()
                 };
                 Ok(address)
             }
