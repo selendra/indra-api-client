@@ -1,5 +1,5 @@
 pub mod operation;
-pub mod transaction;
+pub mod balances;
 pub mod wallet;
 pub mod models;
 pub mod usages;
