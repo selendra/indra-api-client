@@ -1,4 +1,4 @@
-use crate::operation::{Backup, ListWallet, RestoreWallet, Wallet, WatchWallet};
+use crate::models::{Backup, ListWallet, RestoreWallet, Wallet, WatchWallet};
 use indracore_api::{
     balance::check_balance::free_balance,
     keyring::accounid32,

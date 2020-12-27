@@ -1,8 +1,7 @@
 extern crate env_logger;
 use std::env;
 
-pub mod command;
-use command::{operation, operation::Cmd, transaction, wallet};
+use cli::{operation, operation::Cmd, transaction, wallet};
 
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
