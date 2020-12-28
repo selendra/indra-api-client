@@ -48,7 +48,9 @@ pub async fn http_transfer(tx: web::Json<Transaction>) -> Result<HttpResponse, C
             Ok(HttpResponse::Ok().json(res))
         }
         Err(e) => {
-            Err(CustomeError { error: e })
+            let v: Vec<&str> = e.split(|c| c == '{' || c == '}' || c == ':' || c == '"' || c == '(' || c == ')').collect();
+            let err = format!("{} {}, {}", v[8], v[13], v[14]);
+            Err(CustomeError { error: err })
         }
     }
 }
