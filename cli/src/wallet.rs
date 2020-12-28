@@ -7,7 +7,7 @@ use indracore_api::{
 };
 use colour::dark_cyan_ln;
 
-pub fn get_wallet(wallet: Wallet) -> AddrMnemonic {
+pub fn get_wallet(wallet: Wallet) -> Result<AddrMnemonic, String> {
     let store = WalletStore::init(wallet.location.as_deref(), wallet.name.as_deref());
     let mut address = match wallet.phrase {
         Some(phrase) => {
@@ -21,8 +21,7 @@ pub fn get_wallet(wallet: Wallet) -> AddrMnemonic {
             match address {
                 Ok(addr) => addr,
                 Err(_) => {
-                    println!("Invalid Phrase");
-                    std::process::exit(1)
+                    return Err(format!("Invalid Phrase"))
                 }
             }
         }
@@ -48,18 +47,24 @@ pub fn get_wallet(wallet: Wallet) -> AddrMnemonic {
     address.mnemonic = "".to_string();
     store.save(address.clone());
 
-    AddrMnemonic {
+    return Ok(AddrMnemonic {
         address: address.addr,
         mnemonic: mnemonic
-    }
+    })
 }
 
 pub fn op_get_wallet(wallet: Wallet) {
-    let res = get_wallet(wallet);
-    dark_cyan_ln!(
-        "\t>> Address: {}\n\t>> Mnemonic: {}\n\t",
-        res.address, res.mnemonic
-    );
+    match get_wallet(wallet){
+        Ok(res) => {
+            dark_cyan_ln!(
+                "\t>> Address: {}\n\t>> Mnemonic: {}\n\t",
+                res.address, res.mnemonic
+            );
+        }
+        Err(e) => {
+            println!("{:?}", e);
+        }
+    }
 }
 
 pub fn list_wallet(wallet: ListWallet) {

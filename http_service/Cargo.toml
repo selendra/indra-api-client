@@ -13,3 +13,4 @@ name = "sevice"
 [dependencies]
 actix-web = "3.3.2"
 cli = { path = "../cli"}
+derive_more = "0.99.11"

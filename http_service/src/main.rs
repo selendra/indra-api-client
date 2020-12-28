@@ -1,30 +1,16 @@
-use actix_web::{web, App, HttpServer, Result, HttpResponse};
-use cli::{ 
-    models::Wallet,
-    wallet::get_wallet,
-} ;
+use actix_web::{web, App, HttpServer};
 
-/// extract `Info` using serde
-async fn http_get_wallet(wl: web::Json<Wallet>) -> Result<HttpResponse> {
-    let wallet = Wallet {
-        label: wl.label.clone(),
-        name: wl.name.clone(),
-        location: wl.location.clone(),
-        phrase: wl.phrase.clone(),
-        password: wl.password.clone(),
-    };
-    let res = get_wallet(wallet);
-    Ok(
-        HttpResponse::Ok().json(res)
-    )
-}
+pub mod errors;
+pub mod services;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| 
+    HttpServer::new(|| {
         App::new()
-        .route("/", web::post().to(http_get_wallet)))
-        .bind("127.0.0.1:8080")?
-        .run()
-        .await
+            .route("/get-wallet", web::post().to(services::http_get_wallet))
+            .route("/check-balance", web::post().to(services::http_check_balance))
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }

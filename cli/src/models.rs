@@ -3,7 +3,18 @@ use serde::{Serialize, Deserialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AddrMnemonic {
     pub address: String,
-    pub mnemonic:String
+    pub mnemonic: String
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PublicAddress {
+    pub address: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BalanceOutput {
+    pub token: f64,
+    pub symbol: String
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11,7 +22,7 @@ pub struct TransactionOutput {
     pub hash: String,
     pub sender: String,
     pub receiver: String,
-    pub amount: String,
+    pub amount: f64,
     pub symbol: String
 }
 
