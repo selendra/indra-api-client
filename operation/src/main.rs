@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(Cmd::WatchOnly(wl)) => wallet::watch_wallet(wl),
         Ok(Cmd::Restore(rw)) => wallet::restore_wallet(rw),
         Ok(Cmd::Backup(bp)) => wallet::backup(bp),
-        Ok(Cmd::Transaction(tx)) => balances ::op_transaction(tx).await,
+        Ok(Cmd::Transaction(tx)) => balances ::op_run_transaction(tx).await,
         Err(msg) => {
             println!("{}", msg);
             std::process::exit(127);

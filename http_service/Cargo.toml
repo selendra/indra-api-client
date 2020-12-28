@@ -8,9 +8,10 @@ edition = "2018"
 
 [[bin]]
 path = "src/main.rs"
-name = "sevice"
+name = "service"
 
 [dependencies]
 actix-web = "3.3.2"
 cli = { path = "../cli"}
 derive_more = "0.99.11"
+async-std = { version = "1.6.4", features = ["attributes"] }

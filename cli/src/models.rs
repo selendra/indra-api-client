@@ -31,6 +31,7 @@ pub struct Transaction {
     pub sender: String,
     pub receiver: String,
     pub amount: String,
+    #[serde(default)]
     pub location: Option<String>,
 }
 

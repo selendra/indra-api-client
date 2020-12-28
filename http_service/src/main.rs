@@ -9,6 +9,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .route("/get-wallet", web::post().to(services::http_get_wallet))
             .route("/check-balance", web::post().to(services::http_check_balance))
+            .route("/transfer-balance", web::post().to(services::http_transfer))
     })
     .bind(("127.0.0.1", 8080))?
     .run()
