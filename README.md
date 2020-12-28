@@ -119,7 +119,7 @@ Transfer balance
 
 Use label
 ```bash
-./operation transfer --sender "shell" --receiver "5HigHwALzgPyXbg9o6tJfHE49DDMKbZxgMATJuomY4mhCvFD" --amount 100
+./operation transfer --sender "SHELL" --receiver "5HigHwALzgPyXbg9o6tJfHE49DDMKbZxgMATJuomY4mhCvFD" --amount 100
 >> Balance transfer extrinsic submitted: ()
         ** from: 5DA3scF5FRbGioWoZ2gBNP12gx9UC2heT4fFu7cRwA5m1nBg
         ** to: 5CZp9sb9sBYmbfhd7BJjMQ87RZ7xqrJoZELqYZaoSjDVMzyp
