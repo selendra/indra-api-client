@@ -50,8 +50,8 @@ pub async fn run_transaction(tx: Transaction) -> Result<TransactionOutput, Strin
             let signer = PairSigner::<IndracoreNodeRuntime, Sr::Pair>::new(pair);
             let hash = match client.transfer(&signer, &reciever, amount.pay()).await {
                 Ok(hash) => hash,
-                Err(e) => {
-                   return Err(format!("{:?}", e))
+                Err(_) => {
+                    return Err("Invalid Transaction".to_string())
                 }
             };
             hash
@@ -61,8 +61,8 @@ pub async fn run_transaction(tx: Transaction) -> Result<TransactionOutput, Strin
             let signer = PairSigner::<IndracoreNodeRuntime, Ed::Pair>::new(pair);
             let hash = match client.transfer(&signer, &reciever, amount.pay()).await {
                 Ok(hash) => hash,
-                Err(e) => {
-                    return Err(format!("{:?}", e))
+                Err(_) => {
+                    return Err("Invalid Transaction".to_string())
                 }
             };
             hash
@@ -72,8 +72,8 @@ pub async fn run_transaction(tx: Transaction) -> Result<TransactionOutput, Strin
             let signer = PairSigner::<IndracoreNodeRuntime, Ec::Pair>::new(pair);
             let hash = match client.transfer(&signer, &reciever, amount.pay()).await {
                 Ok(hash) => hash,
-                Err(e) => {
-                    return Err(format!("{:?}", e))
+                Err(_) => {
+                    return Err("Invalid Transaction".to_string())
                 }
             };
             hash

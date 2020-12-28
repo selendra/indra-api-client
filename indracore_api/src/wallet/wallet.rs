@@ -319,6 +319,7 @@ mod address_tests {
             seed: pair.to_raw_vec(),
             network: "polkadot".to_owned(),
             created_at: 1591600236132u64,
+            mnemonic: "".to_string()
         };
 
         let address = Address::from_keystore(keystore, password).unwrap();
@@ -343,6 +344,7 @@ mod address_tests {
             seed: pair.to_raw_vec(),
             network: "polkadot".to_owned(),
             created_at: 1591600865993u64,
+            mnemonic: "".to_string()
         };
         let address = Address::from_keystore(keystore, password).unwrap();
         assert_eq!(address, expect_address);
@@ -365,6 +367,7 @@ mod address_tests {
             seed: pair.to_raw_vec(),
             network: "polkadot".to_owned(),
             created_at: 1591600763959u64,
+            mnemonic: "".to_string()
         };
         let address = Address::from_keystore(keystore, password).unwrap();
         assert_eq!(address, expect_address);
@@ -384,6 +387,7 @@ mod address_tests {
             seed: pair.to_raw_vec(),
             network: "polkadot".to_owned(),
             created_at: 1591600236132u64,
+            mnemonic: "".to_string()
         };
         let password = Some("111111".to_owned());
         let keystore = address.into_keystore(password.clone());
@@ -406,6 +410,7 @@ mod address_tests {
             seed: pair.to_raw_vec(),
             network: "polkadot".to_owned(),
             created_at: 1591600236132u64,
+            mnemonic: "".to_string()
         };
         let password = Some("111111".to_owned());
         let keystore = address.into_keystore(password.clone());
@@ -428,6 +433,7 @@ mod address_tests {
             seed: pair.to_raw_vec(),
             network: "polkadot".to_owned(),
             created_at: 1591600236132u64,
+            mnemonic: "".to_string()
         };
         let password = Some("111111".to_owned());
         let keystore = address.into_keystore(password.clone());
