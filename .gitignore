@@ -5,6 +5,7 @@ Cargo.lock
 note.txt
 .env
 *.wasm
+.indrawallet
 
 .vscode/*
 !.vscode/settings.json

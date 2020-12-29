@@ -221,7 +221,7 @@ impl WalletStore {
             })
             .unwrap_or_else(|| {
                 let mut file = dirs::home_dir().unwrap();
-                file.push(".indrawallet");
+                file.push("/home/msi/Desktop/selendra-client/.indrawallet");
                 file.push(DEFAULT_WALLET_NAME);
                 file
             });

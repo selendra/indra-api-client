@@ -65,7 +65,7 @@ pub struct FileStore(FileDatabase<Extrinsics, Bincode>);
 impl FileStore {
     pub fn get(addr: &str) -> Self {
         let mut file = dirs::home_dir().unwrap();
-        file.push(".indrawallet");
+        file.push("/home/msi/Desktop/selendra-client/.indrawallet");
         file.push(format!("xt-{}", addr).as_str());
 
         let backend = Extrinsics::new(addr.to_owned());
@@ -81,7 +81,7 @@ impl FileStore {
     //    file
     //  }).unwrap_or_else(|| {
     //    let mut file = dirs::home_dir().unwrap();
-    //    file.push(".indrawallet");
+    //    file.push("../../../.indrawallet");
     //    file.push(addr.clone());
     //    file
     //  });
