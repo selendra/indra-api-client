@@ -1,6 +1,13 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SendTx {
+    pub sender: String,
+    pub receiver: String,
+    pub amount: f64
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AddrMnemonic {
     pub address: String,
     pub mnemonic: String

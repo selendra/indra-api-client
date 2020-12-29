@@ -1,9 +1,11 @@
-use crate::models::{ Transaction, BalanceOutput, TransactionOutput };
+use crate::models::{ Transaction, BalanceOutput, TransactionOutput, SendTx };
 use colour::{dark_cyan_ln, e_red_ln};
 use indracore_api::wallet::{crypto::*, wallet::*};
 use indracore_api::{
     balance::check_balance::{free_balance, total_issuance},
     keyring::{accounid32, indracoreid},
+    balance::transaction,
+    keyring,
     primitives::{token_type, url, Token},
     substrate_subxt::{
         balances::*,
@@ -154,4 +156,47 @@ pub fn op_check_balance(cmd: String){
         let amount = Token::famount(amount);
         dark_cyan_ln!("balance {:?} {}", amount, token_type())
     }
+}
+
+pub async fn transfer_balance(tx: SendTx) -> Result<TransactionOutput, String> {
+    let account = keyring::Sr25519 { suri: tx.sender };
+    let token = Token { token: tx.amount };
+
+    let pid = match indracoreid(&tx.receiver.clone()) {
+        Ok(pair) => pair,
+        Err(e) => { return Err(format!("{:?}", e)) }
+    };
+    let signer = match account.pair(None) {
+        Ok(pair) => pair,
+        Err(e) => { return Err(format!("{:?}", e)) }
+    };
+    let sender = account.to_accountid().unwrap();
+    let amount = token.pay();
+
+    let transfer = transaction::Transaction {
+        sender: signer,
+        reciever: pid,
+        amount: amount.clone()
+    };
+
+    let free = match free_balance(sender.clone()) {
+        Ok(amount) => amount,
+        Err(e) => {
+            return Err(format!("{:?}", e))
+        }
+    };
+
+    if free <= amount.clone() {
+        return Err("Inefficient balance".to_string())
+    };
+
+    let hash = transfer.run();
+
+    Ok(TransactionOutput {
+        hash: format!("{:?}", hash),
+        sender: format!("{}", sender.clone()),
+        receiver: tx.receiver.clone(),
+        amount: tx.amount.clone(),
+        symbol:  token_type(),
+    })
 }
