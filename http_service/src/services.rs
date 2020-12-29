@@ -1,8 +1,8 @@
 use actix_web::{web, Result, HttpResponse};
 use cli::{ 
-    models::{ Wallet, PublicAddress, Transaction},
+    models::{ Wallet, PublicAddress, Transaction, SendTx },
     wallet::get_wallet,
-    balances::{ check_balance, run_transaction},
+    balances::{ check_balance, run_transaction, transfer_balance},
 };
 
 use crate::errors::CustomeError;
@@ -51,6 +51,22 @@ pub async fn http_transfer(tx: web::Json<Transaction>) -> Result<HttpResponse, C
             let v: Vec<&str> = e.split(|c| c == '{' || c == '}' || c == ':' || c == '"' || c == '(' || c == ')').collect();
             let err = format!("{} {}, {}", v[8], v[13], v[14]);
             Err(CustomeError { error: err })
+        }
+    }
+}
+
+pub async fn http_pharse_transfer(tx: web::Json<SendTx>) -> Result<HttpResponse, CustomeError> {
+    let transfer = SendTx {
+        sender: tx.sender.clone(),
+        receiver: tx.receiver.clone(),
+        amount: tx.amount.clone(),
+    };
+    match transfer_balance(transfer).await {
+        Ok(res) => {
+            Ok(HttpResponse::Ok().json(res))
+        }
+        Err(e) => {
+            Err(CustomeError { error: e })
         }
     }
 }
