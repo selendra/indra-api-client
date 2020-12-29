@@ -220,8 +220,9 @@ impl WalletStore {
                 file
             })
             .unwrap_or_else(|| {
-                let mut file = dirs::home_dir().unwrap();
-                file.push("/home/msi/Desktop/selendra-client/.indrawallet");
+                // let mut file = dirs::home_dir().unwrap();
+                let mut file = std::env::current_dir().unwrap();
+                file.push(".indrawallet");
                 file.push(DEFAULT_WALLET_NAME);
                 file
             });
