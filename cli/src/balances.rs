@@ -190,8 +190,10 @@ pub async fn transfer_balance(tx: SendTx) -> Result<TransactionOutput, String> {
         return Err("Inefficient balance".to_string())
     };
 
-    let hash = transfer.run();
-
+    let hash = match transfer.run() {
+        Ok(hash) => hash,
+        Err(_) => return Err(format!("{:?}", e))
+    };
     Ok(TransactionOutput {
         hash: format!("{:?}", hash),
         sender: format!("{}", sender.clone()),
